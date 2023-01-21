@@ -13,8 +13,9 @@ yes = ["Y", "y"]
 no = ["N", "n"]
 
 username = input("Enter username: ")
+scope = "user-top-read"
 client_credentials_manager = SpotifyClientCredentials()
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth())
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 user = sp.user(username)
 
 def gather_data():
@@ -24,6 +25,12 @@ def gather_data():
         print("---------------------")
         if gather_q in yes:
             pprint.pprint(user)
+            print("---------------------")
+            print("TOP ARTISTS")
+            print("---------------------")
+            top_artist_results = sp.current_user_top_artists(limit=10)
+            for i, item in enumerate(top_artist_results["items"]):
+                print(i, item["name"])
             break
         elif gather_q in no:
             print("Proceeding.")
@@ -42,7 +49,8 @@ def retrieve_playlist():
             break
         elif retrieve_list in no:
             print("Exiting.")
-            sys.exit()
+            # sys.exit()
+            break
         else:
             print("Command not recognised.")
 
