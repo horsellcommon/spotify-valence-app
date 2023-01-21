@@ -18,7 +18,6 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 user = sp.user(username)
 
 def gather_data():
-    global username
     gather_q = ""
     while gather_q not in yes or no:
         gather_q = input("Gather user data? Y/N ")
@@ -32,7 +31,6 @@ def gather_data():
         else:
             print("Command not recognised.")
 def retrieve_playlist():
-    global username
     retrieve_list = ""
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
