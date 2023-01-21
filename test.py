@@ -1,17 +1,17 @@
 import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
 import os
 from decouple import config
+import pprint
 
 os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
 
-scope = "user-library-read"
+username = input("Enter username: ")
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-
-results = sp.current_user_saved_tracks()
-for idx, item in enumerate(results['items']):
-    track = item['track']
-    print(idx, track['artists'][0]['name'], " – ", track['name'])
+client_credentials_manager = SpotifyClientCredentials()
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+user = sp.user(username)
+pprint.pprint(user)
