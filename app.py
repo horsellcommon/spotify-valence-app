@@ -27,10 +27,24 @@ current_song_features = sp.audio_features(playback["item"]["uri"])
 print("Song valence: " + str(current_song_features[0]["valence"]))
 print("Song arousal: " + str(current_song_features[0]["energy"]))
 
-if current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
+### POSITIVE
+if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
+    print(f"This song has very high valence and very high arousal.")
+elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.5:
+    print(f"This song has very high valence and positive arousal.")
+elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
     print("This song has both positive valence and arousal.")
+### AVERAGE HERE OR BOTH POS/NEG VALENCE/AROUSAL
+###
+### NEGATIVE
+elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
+    print(f"This song has negative valence and arousal.")
+elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.5:
+    print(f"This song has very negative valence and negative arousal.")
+elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
+    print(f"This song has very negative valence and very negative arousal.")
 else:
-    print("Work on turning this into function for other data gathered")
+    print("Work on turning this into function for other data gathered - rearrange if needed from top down 0.75 to 0.25")
 print("---------------------")
 
 #### Gather user info - display name & follower count
