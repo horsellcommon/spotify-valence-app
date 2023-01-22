@@ -28,7 +28,8 @@ def gather_data():
         gather_q = input("Gather user data? Y/N ")
         print("---------------------")
         if gather_q in yes:
-            pprint.pprint(user)
+            pprint.pprint("Display Name: " + user["display_name"])
+            pprint.pprint("Followers: " + str(user["followers"]["total"]))
             print("---------------------")
             print("TOP ARTISTS FOR CURRENT USER")
             print("---------------------")
