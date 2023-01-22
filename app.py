@@ -20,6 +20,7 @@ user = sp.user(username)
 
 playback = sp.current_user_playing_track()
 pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
+# Add valence of currently playing track.
 
 def gather_data():
     gather_q = ""
