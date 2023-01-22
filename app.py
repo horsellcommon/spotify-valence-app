@@ -19,9 +19,21 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 user = sp.user(username)
 
 playback = sp.current_user_playing_track()
+print("---------------------")
 pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
 # Add valence of currently playing track.
+# pprint.pprint(playback["item"]["uri"])
+current_song_features = sp.audio_features(playback["item"]["uri"])
+print("Song valence: " + str(current_song_features[0]["valence"]))
+print("Song arousal: " + str(current_song_features[0]["energy"]))
 
+if current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
+    print("This song has both positive valence and arousal.")
+else:
+    print("Work on turning this into function for other data gathered")
+print("---------------------")
+
+#### Gather user info - display name & follower count
 def gather_data():
     gather_q = ""
     while gather_q not in yes or no:
@@ -42,6 +54,8 @@ def gather_data():
             break
         else:
             print("Command not recognised.")
+
+#### Gather Playlists
 def retrieve_playlist():
     retrieve_list = ""
     while retrieve_list not in yes or no:
