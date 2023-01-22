@@ -13,10 +13,13 @@ yes = ["Y", "y"]
 no = ["N", "n"]
 
 username = input("Enter username: ")
-scope = "user-top-read"
+scope = "user-top-read, user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 user = sp.user(username)
+
+playback = sp.current_user_playing_track()
+pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
 
 def gather_data():
     gather_q = ""
@@ -26,7 +29,7 @@ def gather_data():
         if gather_q in yes:
             pprint.pprint(user)
             print("---------------------")
-            print("TOP ARTISTS")
+            print("TOP ARTISTS FOR CURRENT USER")
             print("---------------------")
             top_artist_results = sp.current_user_top_artists(limit=10)
             for i, item in enumerate(top_artist_results["items"]):
@@ -48,7 +51,7 @@ def retrieve_playlist():
                 print(playlist['name'])
             break
         elif retrieve_list in no:
-            print("Exiting.")
+            print("Proceeding.")
             # sys.exit()
             break
         else:
