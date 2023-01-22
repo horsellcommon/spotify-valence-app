@@ -35,16 +35,28 @@ elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["en
 elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
     print("This song has both positive valence and arousal.")
 ### AVERAGE HERE OR BOTH POS/NEG VALENCE/AROUSAL
-###
-### NEGATIVE
+elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.25:
+    print("This song has very high valence but very negative arousal.")
+elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.5:
+    print("This song has very high valence but negative arousal.")
+elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
+    print("This song has positive valence but negative arousal.")
+elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.75:
+    print("This song has very high arousal but very low valence.")
+elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.75:
+    print("This song has very high arousal but negative valence.")
 elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
-    print(f"This song has negative valence and arousal.")
-elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.5:
-    print(f"This song has very negative valence and negative arousal.")
+    print("This song has positive arousal but negative valence.")
+### NEGATIVE
 elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
     print(f"This song has very negative valence and very negative arousal.")
+elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.5:
+    print(f"This song has very negative valence and negative arousal.")
+elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
+    print(f"This song has negative valence and arousal.")
 else:
     print("Work on turning this into function for other data gathered - rearrange if needed from top down 0.75 to 0.25")
+### ADD key, as major/minor may counteract valence
 print("---------------------")
 
 #### Gather user info - display name & follower count
