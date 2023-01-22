@@ -9,55 +9,36 @@ os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
 
-yes = ["Y", "y"]
-no = ["N", "n"]
-
-username = input("Enter username: ")
-scope = "user-top-read, user-read-currently-playing"
-client_credentials_manager = SpotifyClientCredentials()
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
-user = sp.user(username)
-
-playback = sp.current_user_playing_track()
-print("---------------------")
-pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
-# Add valence of currently playing track.
-# pprint.pprint(playback["item"]["uri"])
-current_song_features = sp.audio_features(playback["item"]["uri"])
-print("Song valence: " + str(current_song_features[0]["valence"]))
-print("Song arousal: " + str(current_song_features[0]["energy"]))
-
-### POSITIVE
-if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
-    print(f"This song has very high valence and very high arousal.")
-elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.5:
-    print(f"This song has very high valence and positive arousal.")
-elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
-    print("This song has both positive valence and arousal.")
-### AVERAGE HERE OR BOTH POS/NEG VALENCE/AROUSAL
-elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.25:
-    print("This song has very high valence but very negative arousal.")
-elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.5:
-    print("This song has very high valence but negative arousal.")
-elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
-    print("This song has positive valence but negative arousal.")
-elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.75:
-    print("This song has very high arousal but very low valence.")
-elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.75:
-    print("This song has very high arousal but negative valence.")
-elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
-    print("This song has positive arousal but negative valence.")
-### NEGATIVE
-elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
-    print(f"This song has very negative valence and very negative arousal.")
-elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.5:
-    print(f"This song has very negative valence and negative arousal.")
-elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
-    print(f"This song has negative valence and arousal.")
-else:
-    print("Work on turning this into function for other data gathered - rearrange if needed from top down 0.75 to 0.25")
-### ADD key, as major/minor may counteract valence
-print("---------------------")
+def current_valence_arousal():
+    ### POSITIVE
+    if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
+        print(f"This song has very high valence and very high arousal.")
+    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.5:
+        print(f"This song has very high valence and positive arousal.")
+    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
+        print("This song has both positive valence and arousal.")
+    ### AVERAGE HERE OR BOTH POS/NEG VALENCE/AROUSAL
+    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.25:
+        print("This song has very high valence but very negative arousal.")
+    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.5:
+        print("This song has very high valence but negative arousal.")
+    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
+        print("This song has positive valence but negative arousal.")
+    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.75:
+        print("This song has very high arousal but very low valence.")
+    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.75:
+        print("This song has very high arousal but negative valence.")
+    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
+        print("This song has positive arousal but negative valence.")
+    ### NEGATIVE
+    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
+        print(f"This song has very negative valence and very negative arousal.")
+    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.5:
+        print(f"This song has very negative valence and negative arousal.")
+    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
+        print(f"This song has negative valence and arousal.")
+    else:
+        print("Work on turning this into function for other data gathered - rearrange if needed from top down 0.75 to 0.25")
 
 #### Gather user info - display name & follower count
 def gather_data():
@@ -99,6 +80,32 @@ def retrieve_playlist():
         else:
             print("Command not recognised.")
 
+yes = ["Y", "y"]
+no = ["N", "n"]
+
+username = input("Enter username: ")
+scope = "user-top-read, user-read-currently-playing"
+client_credentials_manager = SpotifyClientCredentials()
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
+user = sp.user(username)
+
+playback = sp.current_user_playing_track()
+print("---------------------")
+pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
+# Add valence of currently playing track.
+# pprint.pprint(playback["item"]["uri"])
+current_song_features = sp.audio_features(playback["item"]["uri"])
+print("Song valence: " + str(current_song_features[0]["valence"]))
+print("Song arousal: " + str(current_song_features[0]["energy"]))
+current_valence_arousal()
+print(">>> SONG KEY may influence effect of valence on mood. <<<")
+print("Key: " + str(current_song_features[0]["key"]))
+# Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
+# Find out whether major/minor is available, valence can not be relied on for key.
+# If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
+
+print("---------------------")
 gather_data()
 print("---------------------")
 retrieve_playlist()
+print("---------------------")
