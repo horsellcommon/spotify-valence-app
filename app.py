@@ -15,6 +15,7 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 
 yes = ["Y", "y"]
 no = ["N", "n"]
+saved_data = {}
 
 def current_valence_arousal():
     ### POSITIVE
@@ -113,6 +114,15 @@ def retrieve_playlist():
                     print("Song valence: " + str(get_features[0]["valence"]))
                     print("Song arousal: " + str(get_features[0]["energy"]))
                     print("Key: " + str(get_features[0]["key"]))
+                    print("--------------------")
+
+                    ###### WORK ON THIS
+                    save_q = input("Save song valence/arousal? Y/N ")
+                    if save_q in yes:
+                        artist_list = [[more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"]], [get_features[0]["valence"], get_features[0]["energy"]]]
+                        print(artist_list)
+                    else:
+                        break
                 else:
                     print("Incorrect track number selected.")
 
