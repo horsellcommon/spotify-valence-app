@@ -38,7 +38,7 @@ def current_valence_arousal():
     elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
         print(f"This song has negative valence and arousal.")
     else:
-        print("Work on turning this into function for other data gathered - rearrange if needed from top down 0.75 to 0.25")
+        print("No valence/energy data available for some reason.")
 
 #### Gather user info - display name & follower count
 def gather_data():
@@ -62,6 +62,7 @@ def gather_data():
         else:
             print("Command not recognised.")
 
+
 #### Gather Playlists
 def retrieve_playlist():
     retrieve_list = ""
@@ -70,8 +71,10 @@ def retrieve_playlist():
         print("---------------------")
         if retrieve_list in yes:
             playlists = sp.user_playlists(username)
+            listed = []
             for playlist in playlists['items']:
-                print(playlist['name'])
+                listed.append(playlist)
+            pprint.pprint(listed) # Have all playlist metadata now, including URI
             break
         elif retrieve_list in no:
             print("Proceeding.")
