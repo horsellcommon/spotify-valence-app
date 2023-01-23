@@ -82,8 +82,21 @@ def retrieve_playlist():
             selected_playlist = input("Input a playlist number for more details: ")
             if selected_playlist == "0":
                 # pprint.pprint(listed[0])
-                playlist_uri = sp.playlist(listed[0]["uri"])
-                pprint.pprint(playlist_uri) # Well done
+                playlist_uri = listed[0]["uri"]
+                #print(playlist_uri) # Well done
+                more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
+                # pprint.pprint(more_details["items"])
+                track_selector = int(input("Select a track for more details: "))
+                if track_selector < len(playlist_uri) + 1:
+                    pprint.pprint(more_details["items"][track_selector]["track"])
+                    print("--------------------")
+                    print("You have chosen '" + more_details["items"][track_selector]["track"]["name"] + "' by " + more_details["items"][track_selector]["track"]["artists"][0]["name"] + ".")
+                    get_features = sp.audio_features(more_details["items"][track_selector]["track"]["uri"])
+                    print("Song valence: " + str(get_features[0]["valence"]))
+                    print("Song arousal: " + str(get_features[0]["energy"]))
+                    print("Key: " + str(get_features[0]["key"]))
+                else:
+                    print("nob ed")
 
             else:
                 print("FUCK")
