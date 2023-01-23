@@ -9,6 +9,13 @@ os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
 
+scope = "user-top-read, user-read-currently-playing"
+client_credentials_manager = SpotifyClientCredentials()
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
+
+yes = ["Y", "y"]
+no = ["N", "n"]
+
 def current_valence_arousal():
     ### POSITIVE
     if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
@@ -118,13 +125,6 @@ def retrieve_playlist():
             break
         else:
             print("Command not recognised.")
-
-yes = ["Y", "y"]
-no = ["N", "n"]
-
-scope = "user-top-read, user-read-currently-playing"
-client_credentials_manager = SpotifyClientCredentials()
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 
 listening_now = "" # Quick fix for if Spotify isn't running, will try to substitute with something that checks whether the user is listening rather than having manual input
 while listening_now not in yes or no:
