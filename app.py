@@ -30,6 +30,8 @@ def current_valence_arousal():
         print("This song has very high arousal but negative valence.")
     elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
         print("This song has positive arousal but negative valence.")
+    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] < 0.5:
+        print("This song has negative arousal but prositive valence.")
     ### NEGATIVE
     elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
         print(f"This song has very negative valence and very negative arousal.")
@@ -49,12 +51,15 @@ def gather_data():
         if gather_q in yes:
             pprint.pprint("Display Name: " + user["display_name"])
             pprint.pprint("Followers: " + str(user["followers"]["total"]))
-            print("---------------------")
-            print("TOP ARTISTS FOR CURRENT USER")
-            print("---------------------")
-            top_artist_results = sp.current_user_top_artists(limit=10)
-            for i, item in enumerate(top_artist_results["items"]):
-                print(i, item["name"])
+
+            # No need for top artists for current user at the moment?
+
+            # print("---------------------")
+            # print("TOP ARTISTS FOR CURRENT USER")
+            # print("---------------------")
+            # top_artist_results = sp.current_user_top_artists(limit=10)
+            # for i, item in enumerate(top_artist_results["items"]):
+            #     print(i, item["name"])
             break
         elif gather_q in no:
             print("Proceeding.")
@@ -119,11 +124,9 @@ def retrieve_playlist():
 yes = ["Y", "y"]
 no = ["N", "n"]
 
-username = input("Enter username: ")
 scope = "user-top-read, user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
-user = sp.user(username)
 
 playback = sp.current_user_playing_track()
 print("---------------------")
@@ -139,8 +142,12 @@ print("Key: " + str(current_song_features[0]["key"]))
 # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
 # Find out whether major/minor is available, valence can not be relied on for key.
 # If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
-
 print("---------------------")
+
+username = input("Enter username: ")
+user = sp.user(username)
+
+
 gather_data()
 print("---------------------")
 retrieve_playlist()
