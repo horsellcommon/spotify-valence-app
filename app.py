@@ -31,7 +31,7 @@ def current_valence_arousal():
     elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
         print("This song has positive arousal but negative valence.")
     elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] < 0.5:
-        print("This song has negative arousal but prositive valence.")
+        print("This song has negative arousal but positive valence.")
     ### NEGATIVE
     elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.25:
         print(f"This song has very negative valence and very negative arousal.")
