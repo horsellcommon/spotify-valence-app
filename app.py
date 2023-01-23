@@ -4,7 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 from decouple import config
 import pprint
-import sys
+import json
 os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
@@ -15,7 +15,6 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 
 yes = ["Y", "y"]
 no = ["N", "n"]
-saved_data = {}
 
 def current_valence_arousal():
     ### POSITIVE
@@ -119,8 +118,18 @@ def retrieve_playlist():
                     ###### WORK ON THIS
                     save_q = input("Save song valence/arousal? Y/N ")
                     if save_q in yes:
-                        artist_list = [[more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"]], [get_features[0]["valence"], get_features[0]["energy"]]]
-                        print(artist_list)
+                        artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
+                        class Song:
+                            def __init__(self, title, artist, valence, arousal):
+                                self.title = title
+                                self.artist = artist
+                                self.valence = valence
+                                self.arousal = arousal                        
+                        make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                        dump_it = json.dumps(make_it.__dict__)
+                        print(dump_it)
+                        with open("output.json", "w") as json_file:
+                            json.dump(dump_it, json_file)
                     else:
                         break
                 else:
