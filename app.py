@@ -90,10 +90,8 @@ def retrieve_playlist():
                 # ENUMERATOR
                 track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=100, offset=0, market=None, additional_types=('track', ))
                 track_names = []
-                def iterate():
-                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
-                        track_names.append(track_enumerator["items"][i]["track"]["name"])
-                iterate()
+                for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
+                    track_names.append(track_enumerator["items"][i]["track"]["name"])
                 numbered_names = enumerate(track_names)
                 pprint.pprint(list(numbered_names))
 
