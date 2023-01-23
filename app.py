@@ -73,9 +73,7 @@ def retrieve_playlist():
             listed = []
             for playlist in playlists['items']:
                 listed.append(playlist)
-            #pprint.pprint(listed) # Have all playlist metadata now, including URI
-            # Now enumerate and allow for selection?
-            for i, item in enumerate(playlists["items"]): # Number them all!!!!
+            for i, item in enumerate(playlists["items"]):
                 print(i, item["name"])
             
             selected_playlist = input("Input a playlist number for more details: ")
@@ -90,18 +88,13 @@ def retrieve_playlist():
                     for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                         track_names.append(track_enumerator["items"][i]["track"]["name"])
                 iterate()
-                pprint.pprint(track_names)
-
-
-                # pprint.pprint(track_enumerator["items"])
-                # for names in more_details["items"]:
-                #     track_names.append(names)
-                # pprint.pprint(track_names)
+                numbered_names = enumerate(track_names)
+                pprint.pprint(list(numbered_names))
 
                 # SELECTOR, WORKS
                 track_selector = int(input("Select a track for more details: "))
                 if track_selector < len(playlist_uri) + 1:
-                    pprint.pprint(more_details["items"][track_selector]["track"])
+                    # pprint.pprint(more_details["items"][track_selector]["track"])
                     print("--------------------")
                     print("You have chosen '" + more_details["items"][track_selector]["track"]["name"] + "' by " + more_details["items"][track_selector]["track"]["artists"][0]["name"] + ".")
                     get_features = sp.audio_features(more_details["items"][track_selector]["track"]["uri"])
