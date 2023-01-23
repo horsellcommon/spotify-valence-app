@@ -62,7 +62,6 @@ def gather_data():
         else:
             print("Command not recognised.")
 
-
 #### Gather Playlists
 def retrieve_playlist():
     retrieve_list = ""
@@ -70,11 +69,24 @@ def retrieve_playlist():
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
         if retrieve_list in yes:
-            playlists = sp.user_playlists(username)
+            playlists = sp.user_playlists(username, limit=10) # Limit to 10 latest playlists
             listed = []
             for playlist in playlists['items']:
                 listed.append(playlist)
-            pprint.pprint(listed) # Have all playlist metadata now, including URI
+            #pprint.pprint(listed) # Have all playlist metadata now, including URI
+            # Now enumerate and allow for selection?
+            for i, item in enumerate(playlists["items"]): # Number them all!!!!
+                print(i, item["name"])
+            
+            # input, and if input correlates to this playlist number then display song name, artist and valence/energy/key results of each track
+            selected_playlist = input("Input a playlist number for more details: ")
+            if selected_playlist == "0":
+                # pprint.pprint(listed[0])
+                playlist_uri = sp.playlist(listed[0]["uri"])
+                pprint.pprint(playlist_uri) # Well done
+
+            else:
+                print("FUCK")
             break
         elif retrieve_list in no:
             print("Proceeding.")
