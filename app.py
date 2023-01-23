@@ -69,7 +69,7 @@ def retrieve_playlist():
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
         if retrieve_list in yes:
-            playlists = sp.user_playlists(username, limit=10) # Limit to 10 latest playlists
+            playlists = sp.user_playlists(username) # Limit to 10 latest playlists
             listed = []
             for playlist in playlists['items']:
                 listed.append(playlist)
