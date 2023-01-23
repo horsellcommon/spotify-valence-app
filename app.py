@@ -78,14 +78,27 @@ def retrieve_playlist():
             for i, item in enumerate(playlists["items"]): # Number them all!!!!
                 print(i, item["name"])
             
-            # input, and if input correlates to this playlist number then display song name, artist and valence/energy/key results of each track
             selected_playlist = input("Input a playlist number for more details: ")
             if selected_playlist == "0":
-                # pprint.pprint(listed[0])
                 playlist_uri = listed[0]["uri"]
-                #print(playlist_uri) # Well done
                 more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
-                # pprint.pprint(more_details["items"])
+
+                # ENUMERATOR
+                track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=100, offset=0, market=None, additional_types=('track', ))
+                track_names = []
+                def iterate():
+                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
+                        track_names.append(track_enumerator["items"][i]["track"]["name"])
+                iterate()
+                pprint.pprint(track_names)
+
+
+                # pprint.pprint(track_enumerator["items"])
+                # for names in more_details["items"]:
+                #     track_names.append(names)
+                # pprint.pprint(track_names)
+
+                # SELECTOR, WORKS
                 track_selector = int(input("Select a track for more details: "))
                 if track_selector < len(playlist_uri) + 1:
                     pprint.pprint(more_details["items"][track_selector]["track"])
