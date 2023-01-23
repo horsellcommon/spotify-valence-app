@@ -75,10 +75,11 @@ def retrieve_playlist():
                 listed.append(playlist)
             for i, item in enumerate(playlists["items"]):
                 print(i, item["name"])
-            
-            selected_playlist = input("Input a playlist number for more details: ")
-            if selected_playlist == "0":
-                playlist_uri = listed[0]["uri"]
+            print("---------------------")
+            selected_playlist = int(input("Input a playlist number for more details: "))
+            print("---------------------")
+            if selected_playlist < len(listed) +1:
+                playlist_uri = listed[selected_playlist]["uri"]
                 more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
 
                 # ENUMERATOR
@@ -92,6 +93,7 @@ def retrieve_playlist():
                 pprint.pprint(list(numbered_names))
 
                 # SELECTOR, WORKS
+                print("---------------------")
                 track_selector = int(input("Select a track for more details: "))
                 if track_selector < len(playlist_uri) + 1:
                     # pprint.pprint(more_details["items"][track_selector]["track"])
@@ -102,10 +104,10 @@ def retrieve_playlist():
                     print("Song arousal: " + str(get_features[0]["energy"]))
                     print("Key: " + str(get_features[0]["key"]))
                 else:
-                    print("nob ed")
+                    print("Incorrect track number selected.")
 
             else:
-                print("FUCK")
+                print("Incorrect playlist number selected.")
             break
         elif retrieve_list in no:
             print("Proceeding.")
