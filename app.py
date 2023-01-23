@@ -128,25 +128,34 @@ scope = "user-top-read, user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 
-playback = sp.current_user_playing_track()
-print("---------------------")
-pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
-# Add valence of currently playing track.
-# pprint.pprint(playback["item"]["uri"])
-current_song_features = sp.audio_features(playback["item"]["uri"])
-print("Song valence: " + str(current_song_features[0]["valence"]))
-print("Song arousal: " + str(current_song_features[0]["energy"]))
-current_valence_arousal()
-print(">>> SONG KEY may influence effect of valence on mood. <<<")
-print("Key: " + str(current_song_features[0]["key"]))
-# Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
-# Find out whether major/minor is available, valence can not be relied on for key.
-# If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
-print("---------------------")
+listening_now = "" # Quick fix for if Spotify isn't running, will try to substitute with something that checks whether the user is listening rather than having manual input
+while listening_now not in yes or no:
+        listening_now = input("Are you listening to Spotify right now? Y/N ")
+        if listening_now in yes:
+            playback = sp.current_user_playing_track()
+            print("---------------------") 
+            pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
+            # Add valence of currently playing track.
+            # pprint.pprint(playback["item"]["uri"])
+            current_song_features = sp.audio_features(playback["item"]["uri"])
+            print("Song valence: " + str(current_song_features[0]["valence"]))
+            print("Song arousal: " + str(current_song_features[0]["energy"]))
+            current_valence_arousal()
+            print(">>> SONG KEY may influence effect of valence on mood. <<<")
+            print("Key: " + str(current_song_features[0]["key"]))
+            # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
+            # Find out whether major/minor is available, valence can not be relied on for key.
+            # If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
+            print("---------------------")
+            break
+        elif listening_now in no:
+            print("Proceeding.")
+            break
+        else:
+            print("Command not recognised")
 
 username = input("Enter username: ")
 user = sp.user(username)
-
 
 gather_data()
 print("---------------------")
