@@ -140,7 +140,6 @@ def retrieve_playlist():
             break
         elif retrieve_list in no:
             print("Proceeding.")
-            # sys.exit()
             break
         else:
             print("Command not recognised.")
