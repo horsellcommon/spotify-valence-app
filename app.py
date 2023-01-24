@@ -81,7 +81,7 @@ def retrieve_playlist():
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
         if retrieve_list in yes:
-            playlists = sp.user_playlists(username) # Limit to 10 latest playlists
+            playlists = sp.user_playlists(username)
             listed = []
             for playlist in playlists['items']:
                 listed.append(playlist)
@@ -95,7 +95,7 @@ def retrieve_playlist():
                 more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
 
                 # ENUMERATOR
-                track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=100, offset=0, market=None, additional_types=('track', ))
+                track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=40, offset=0, market=None, additional_types=('track', )) # Limited to 39 because selecting anything above 39 causes an error
                 track_names = []
                 for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                     track_names.append(track_enumerator["items"][i]["track"]["name"])
