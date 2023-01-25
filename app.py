@@ -108,12 +108,19 @@ def retrieve_playlist():
                 playlist_uri = listed[selected_playlist]["uri"]
                 more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
 
-                # ENUMERATOR
+                # ENUMERATOR + GATHER VALENCE/ENERGY OF ENTIRE PLAYLIST
                 track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=40, offset=0, market=None, additional_types=('track', )) # Limited to 39 because selecting anything above 39 causes an error
                 track_names = []
+                track_uris = []                
+                valences = []
+                energy = []   
                 for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                     track_names.append(track_enumerator["items"][i]["track"]["name"])
-                numbered_names = enumerate(track_names)
+                    track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
+                    valences.append(track_uris[i][0]["valence"])
+                    energy.append(track_uris[i][0]["energy"])
+                combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
+                numbered_names = enumerate(combination)
                 pprint.pprint(list(numbered_names))
 
                 # SELECTOR, WORKS
