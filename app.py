@@ -139,7 +139,7 @@ def retrieve_playlist():
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
                             with open("output.json", "a") as json_file:
-                                json_file.write(dump_it + "\n" + "]")
+                                json_file.write(dump_it + "," + "\n" + current_song_dumped + "\n" + "]")
                             # Final read and average of output file
                             open_file = open("output.json")
                             load_file = json.load(open_file)
@@ -206,6 +206,11 @@ while listening_now not in yes or no:
             # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
             # Find out whether major/minor is available, valence can not be relied on for key.
             # If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
+            append_at_end = input("Add song to output file? Y/N ")
+            if append_at_end in yes:
+                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features[0]["valence"], current_song_features[0]["energy"])
+                current_song_dumped = json.dumps(current_song_object.__dict__, indent=4, separators=(",", ": "))
+                print(current_song_dumped)
             print("---------------------")
             break
         elif listening_now in no:
