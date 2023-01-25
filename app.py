@@ -18,9 +18,13 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
+playlist_exist = False
 path = Path("./output.json")
+path1 = Path("./playlist.json")
 if path.is_file() == True:
     json_exist = True
+if path1.is_file() == True:
+    playlist_exist = True
 
 class Song:
     def __init__(self, title, artist, valence, arousal):
@@ -89,6 +93,7 @@ def gather_data():
 
 #### Gather Playlists
 def retrieve_playlist():
+    global playlist_exist
     global json_exist
     retrieve_list = ""
     while retrieve_list not in yes or no:
@@ -116,19 +121,27 @@ def retrieve_playlist():
                 energy = []
                 
                 # Write entire playlist to json - Will leave a comma on the last object which will need to be removed
-                with open("playlist.json", "w") as json_file:
-                    json_file.write("[" + "\n")
-                for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
-                    track_names.append(track_enumerator["items"][i]["track"]["name"])
-                    track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
-                    valences.append(track_uris[i][0]["valence"])
-                    energy.append(track_uris[i][0]["energy"])
-                    create_playlist_objects = Song(track_names[i], track_enumerator["items"][i]["track"]["album"]["artists"][0]["name"], valences[i], energy[i])
-                    dump_tracks = json.dumps(create_playlist_objects.__dict__, indent=4, separators=(",", ": "))
+                if playlist_exist == True:
+                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
+                        track_names.append(track_enumerator["items"][i]["track"]["name"])
+                        track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
+                        valences.append(track_uris[i][0]["valence"])
+                        energy.append(track_uris[i][0]["energy"])
+                else:
+                    with open("playlist.json", "w") as json_file:
+                        json_file.write("[" + "\n")
+                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
+                        track_names.append(track_enumerator["items"][i]["track"]["name"])
+                        track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
+                        valences.append(track_uris[i][0]["valence"])
+                        energy.append(track_uris[i][0]["energy"])
+                        create_playlist_objects = Song(track_names[i], track_enumerator["items"][i]["track"]["album"]["artists"][0]["name"], valences[i], energy[i])
+                        dump_tracks = json.dumps(create_playlist_objects.__dict__, indent=4, separators=(",", ": "))
+                        with open("playlist.json", "a") as json_file:
+                            json_file.write(dump_tracks + "," + "\n")
                     with open("playlist.json", "a") as json_file:
-                        json_file.write(dump_tracks + "," + "\n")
-                with open("playlist.json", "a") as json_file:
-                    json_file.write("]")
+                        json_file.write("]")
+                    playlist_exist = True
 
                 combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
                 numbered_names = enumerate(combination)
