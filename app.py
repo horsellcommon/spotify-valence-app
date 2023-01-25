@@ -95,6 +95,8 @@ def retrieve_playlist():
     if looped == True:
         continue_q = input("Finished gathering data? Y/N ")
         if continue_q in yes:
+            with open("output.json", "a") as json_file:
+                json_file.write("]")
             sys.exit()
         else:
             looped = False
@@ -142,30 +144,27 @@ def retrieve_playlist():
                     if save_q in yes and json_exist == True:
                         artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
                         make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
-                        dump_it = json.dumps(make_it.__dict__)
+                        dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
+                        print(dump_it)
                         with open("output.json", "a") as json_file:
-                            json.dump(dump_it, json_file)
-                            json_file.write("\n")
+                            json_file.write(dump_it + "," + "\n")
                         looped = True
                         retrieve_playlist()
                     elif save_q in yes:
                         artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
                         make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
-                        dump_it = json.dumps(make_it.__dict__)
+                        dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                         print(dump_it)
                         with open("output.json", "w") as json_file:
-                            json.dump(dump_it, json_file)
-                            json_file.write("\n")
+                            json_file.write("[" + "\n" + dump_it + "," + "\n")
                         json_exist = True
                         retrieve_playlist()
                     else:
                         break
                 else:
                     print("Incorrect track number selected.")
-
             else:
                 print("Incorrect playlist number selected.")
-            break
         elif retrieve_list in no:
             sys.exit()
         else:
