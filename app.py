@@ -5,6 +5,7 @@ import os
 from decouple import config
 import pprint
 import json
+from pathlib import Path
 os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
@@ -16,6 +17,9 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
+path = Path("./output.json")
+if path.is_file() == True:
+    json_exist = True
 
 class Song:
     def __init__(self, title, artist, valence, arousal):
