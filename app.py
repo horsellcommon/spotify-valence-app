@@ -6,6 +6,7 @@ from decouple import config
 import pprint
 import json
 from pathlib import Path
+import sys
 os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
@@ -17,6 +18,7 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
+looped = False
 path = Path("./output.json")
 if path.is_file() == True:
     json_exist = True
@@ -89,6 +91,13 @@ def gather_data():
 #### Gather Playlists
 def retrieve_playlist():
     global json_exist
+    global looped
+    if looped == True:
+        continue_q = input("Finished gathering data? Y/N ")
+        if continue_q in yes:
+            sys.exit()
+        else:
+            looped = False
     retrieve_list = ""
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
@@ -137,6 +146,8 @@ def retrieve_playlist():
                         with open("output.json", "a") as json_file:
                             json.dump(dump_it, json_file)
                             json_file.write("\n")
+                        looped = True
+                        retrieve_playlist()
                     elif save_q in yes:
                         artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
                         make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
