@@ -113,12 +113,23 @@ def retrieve_playlist():
                 track_names = []
                 track_uris = []                
                 valences = []
-                energy = []   
+                energy = []
+                
+                # Write entire playlist to json - Will leave a comma on the last object which will need to be removed
+                with open("playlist.json", "w") as json_file:
+                    json_file.write("[" + "\n")
                 for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                     track_names.append(track_enumerator["items"][i]["track"]["name"])
                     track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
                     valences.append(track_uris[i][0]["valence"])
                     energy.append(track_uris[i][0]["energy"])
+                    create_playlist_objects = Song(track_names[i], track_enumerator["items"][i]["track"]["album"]["artists"][0]["name"], valences[i], energy[i])
+                    dump_tracks = json.dumps(create_playlist_objects.__dict__, indent=4, separators=(",", ": "))
+                    with open("playlist.json", "a") as json_file:
+                        json_file.write(dump_tracks + "," + "\n")
+                with open("playlist.json", "a") as json_file:
+                    json_file.write("]")
+
                 combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
                 numbered_names = enumerate(combination)
                 pprint.pprint(list(numbered_names))
