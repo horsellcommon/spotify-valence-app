@@ -18,7 +18,6 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
-looped = False
 path = Path("./output.json")
 if path.is_file() == True:
     json_exist = True
@@ -91,15 +90,6 @@ def gather_data():
 #### Gather Playlists
 def retrieve_playlist():
     global json_exist
-    global looped
-    if looped == True:
-        continue_q = input("Finished gathering data? Y/N ")
-        if continue_q in yes:
-            with open("output.json", "a") as json_file:
-                json_file.write("]")
-            sys.exit()
-        else:
-            looped = False
     retrieve_list = ""
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
@@ -142,14 +132,24 @@ def retrieve_playlist():
                     ###### WORK ON THIS
                     save_q = input("Save song valence/arousal? Y/N ")
                     if save_q in yes and json_exist == True:
-                        artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
-                        make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
-                        dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
-                        print(dump_it)
-                        with open("output.json", "a") as json_file:
-                            json_file.write(dump_it + "," + "\n")
-                        looped = True
-                        retrieve_playlist()
+                        final_input = input("Is this your final data entry? Y/N ")
+                        if final_input in yes:
+                            artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
+                            print(dump_it)
+                            with open("output.json", "a") as json_file:
+                                json_file.write(dump_it + "\n" + "]")
+                            sys.exit()
+                        else:
+                            artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
+                            print(dump_it)
+                            with open("output.json", "a") as json_file:
+                                json_file.write(dump_it + "," + "\n")
+                            looped = True
+                            retrieve_playlist()
                     elif save_q in yes:
                         artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
                         make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
