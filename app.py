@@ -19,6 +19,7 @@ yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
 playlist_exist = False
+current_song_exists = False
 path = Path("./output.json")
 path1 = Path("./playlist.json")
 if path.is_file() == True:
@@ -169,8 +170,12 @@ def retrieve_playlist():
                             make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
-                            with open("output.json", "a") as json_file:
-                                json_file.write(dump_it + "," + "\n" + current_song_dumped + "\n" + "]")
+                            if current_song_exists == True:
+                                with open("output.json", "a") as json_file:
+                                    json_file.write(dump_it + "," + "\n" + current_song_dumped + "\n" + "]")
+                            else:
+                                with open("output.json", "a") as json_file:
+                                    json_file.write(dump_it + "\n" + "]")
                             # Final read and average of output file
                             open_file = open("output.json")
                             load_file = json.load(open_file)
@@ -242,6 +247,7 @@ while listening_now not in yes or no:
                 current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features[0]["valence"], current_song_features[0]["energy"])
                 current_song_dumped = json.dumps(current_song_object.__dict__, indent=4, separators=(",", ": "))
                 print(current_song_dumped)
+                current_song_exists = True
             print("---------------------")
             break
         elif listening_now in no:
