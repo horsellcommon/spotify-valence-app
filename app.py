@@ -214,7 +214,7 @@ def retrieve_playlist():
                         json_exist = True
                         retrieve_playlist()
                     else:
-                        break
+                        retrieve_playlist()
                 else:
                     print("Incorrect track number selected.")
             else:
