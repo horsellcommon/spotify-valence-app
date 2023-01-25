@@ -140,6 +140,25 @@ def retrieve_playlist():
                             print(dump_it)
                             with open("output.json", "a") as json_file:
                                 json_file.write(dump_it + "\n" + "]")
+                            # Final read and average of output file
+                            open_file = open("output.json")
+                            load_file = json.load(open_file)
+                            valence_list = []
+                            arousal_list = []
+                            for valences in load_file:
+                                valence_list.append(valences["valence"])
+                            for energy in load_file:
+                                arousal_list.append(energy["arousal"])
+                            def Average(total):
+                                return sum(total) / len(total)
+                            call_average_valence = Average(valence_list)
+                            call_average_energy = Average(arousal_list)
+                            print("---------------------")
+                            print("Averaging valence and energy/arousal of existing output file...")
+                            print("Average Valence: ", call_average_valence)
+                            print("Average energy/arousal: ", call_average_energy)
+                            print("---------------------")
+                            open_file.close()
                             sys.exit()
                         else:
                             artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
@@ -197,7 +216,6 @@ while listening_now not in yes or no:
 
 username = input("Enter username: ")
 user = sp.user(username)
-
 gather_data()
 print("---------------------")
 retrieve_playlist()
