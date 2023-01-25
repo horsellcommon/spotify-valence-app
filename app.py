@@ -167,8 +167,7 @@ def retrieve_playlist():
                 print("Incorrect playlist number selected.")
             break
         elif retrieve_list in no:
-            print("Proceeding.")
-            break
+            sys.exit()
         else:
             print("Command not recognised.")
 
