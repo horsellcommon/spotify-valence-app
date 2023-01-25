@@ -148,7 +148,6 @@ def retrieve_playlist():
                             print(dump_it)
                             with open("output.json", "a") as json_file:
                                 json_file.write(dump_it + "," + "\n")
-                            looped = True
                             retrieve_playlist()
                     elif save_q in yes:
                         artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
