@@ -121,7 +121,7 @@ def retrieve_playlist():
                 valences = []
                 energy = []
                 
-                # Write entire playlist to json - Will leave a comma on the last object which will need to be removed
+                # Write entire playlist to json
                 if playlist_exist == True:
                     for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                         track_names.append(track_enumerator["items"][i]["track"]["name"])
@@ -140,8 +140,10 @@ def retrieve_playlist():
                         dump_tracks = json.dumps(create_playlist_objects.__dict__, indent=4, separators=(",", ": "))
                         with open("playlist.json", "a") as json_file:
                             json_file.write(dump_tracks + "," + "\n")
+                    blank_obj = Song("", "", "", "") # Bad form but quick way to ensure json is formatted correctly on completion
+                    final_dump = json.dumps(blank_obj.__dict__, indent=4, separators=(",", ": "))
                     with open("playlist.json", "a") as json_file:
-                        json_file.write("]")
+                        json_file.write(final_dump + "\n" + "]")
                     playlist_exist = True
 
                 combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
