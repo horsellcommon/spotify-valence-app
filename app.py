@@ -100,6 +100,9 @@ def retrieve_playlist():
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
+        if current_song_exists == True and retrieve_list in no and json_exist == False:
+            with open("output.json", "w") as json_file:
+                json_file.write("[" + "\n" + current_song_dumped + "\n" + "]")
         if retrieve_list in yes:
             playlists = sp.user_playlists(username)
             listed = []
