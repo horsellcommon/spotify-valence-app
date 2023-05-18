@@ -11,10 +11,12 @@ os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
 os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
 os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
 
+# Spotipy stuff
 scope = "user-top-read, user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 
+# Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
@@ -27,13 +29,16 @@ if path.is_file() == True:
 if path1.is_file() == True:
     playlist_exist = True
 
+
 class Song:
     def __init__(self, title, artist, valence, arousal):
         self.title = title
         self.artist = artist
         self.valence = valence
-        self.arousal = arousal   
+        self.arousal = arousal
 
+
+# Atrocious if/else vomit that gives really vague descriptions of valence/arousal level. Absolutely useless.
 def current_valence_arousal():
     ### POSITIVE
     if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
@@ -42,7 +47,7 @@ def current_valence_arousal():
         print(f"This song has very high valence and positive arousal.")
     elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
         print("This song has both positive valence and arousal.")
-    ### AVERAGE HERE OR BOTH POS/NEG VALENCE/AROUSAL
+    ### AVERAGE OR DIFFERING
     elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.25:
         print("This song has very high valence but very negative arousal.")
     elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.5:
@@ -76,15 +81,6 @@ def gather_data():
         if gather_q in yes:
             pprint.pprint("Display Name: " + user["display_name"])
             pprint.pprint("Followers: " + str(user["followers"]["total"]))
-
-            # No need for top artists for current user at the moment?
-
-            # print("---------------------")
-            # print("TOP ARTISTS FOR CURRENT USER")
-            # print("---------------------")
-            # top_artist_results = sp.current_user_top_artists(limit=10)
-            # for i, item in enumerate(top_artist_results["items"]):
-            #     print(i, item["name"])
             break
         elif gather_q in no:
             print("Proceeding.")
@@ -157,7 +153,6 @@ def retrieve_playlist():
                 print("---------------------")
                 track_selector = int(input("Select a track for more details: "))
                 if track_selector < len(playlist_uri) + 1:
-                    # pprint.pprint(more_details["items"][track_selector]["track"])
                     print("--------------------")
                     print("You have chosen '" + more_details["items"][track_selector]["track"]["name"] + "' by " + more_details["items"][track_selector]["track"]["artists"][0]["name"] + ".")
                     get_features = sp.audio_features(more_details["items"][track_selector]["track"]["uri"])
@@ -236,8 +231,8 @@ while listening_now not in yes or no:
             playback = sp.current_user_playing_track()
             print("---------------------") 
             pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
+
             # Add valence of currently playing track.
-            # pprint.pprint(playback["item"]["uri"])
             current_song_features = sp.audio_features(playback["item"]["uri"])
             print("Song valence: " + str(current_song_features[0]["valence"]))
             print("Song arousal: " + str(current_song_features[0]["energy"]))
