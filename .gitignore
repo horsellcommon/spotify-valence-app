@@ -5,6 +5,7 @@ notes.md
 output.json
 playlist.json
 
+/images
 /build
 /dist
 app.spec

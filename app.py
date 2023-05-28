@@ -6,6 +6,8 @@ import pprint
 import json
 from pathlib import Path
 import sys
+
+# Should really save these vars in a file and have if exist then pull from file, saves manually inputting each time
 os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
 os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
 os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
