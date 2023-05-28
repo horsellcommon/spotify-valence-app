@@ -2,14 +2,13 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
 import os
-from decouple import config
 import pprint
 import json
 from pathlib import Path
 import sys
-os.environ["SPOTIPY_CLIENT_ID"] = config("ID")
-os.environ["SPOTIPY_CLIENT_SECRET"] = config("SECRET")
-os.environ["SPOTIPY_REDIRECT_URI"] = config("URI")
+os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
+os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
+os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
 
 # Spotipy stuff
 scope = "user-top-read, user-read-currently-playing"

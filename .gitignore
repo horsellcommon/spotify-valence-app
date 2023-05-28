@@ -4,3 +4,7 @@
 notes.md
 output.json
 playlist.json
+
+/build
+/dist
+app.spec
