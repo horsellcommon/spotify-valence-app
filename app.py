@@ -6,6 +6,7 @@ import pprint
 import json
 from pathlib import Path
 import sys
+import linecache
 
 # Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
@@ -36,7 +37,9 @@ class Song:
 
 # Should really save these vars in a file and have if exist then pull from file, saves manually inputting each time
 if user_exist:
-    print("Do this")
+    os.environ["SPOTIPY_CLIENT_ID"] = linecache.getline(r"./user.txt", 1)
+    os.environ["SPOTIPY_CLIENT_SECRET"] = linecache.getline(r"./user.txt", 2)
+    os.environ["SPOTIPY_REDIRECT_URI"] = linecache.getline(r"./user.txt", 3)
 else:
     os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
     os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
