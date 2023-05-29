@@ -7,28 +7,24 @@ import json
 from pathlib import Path
 import sys
 
-# Should really save these vars in a file and have if exist then pull from file, saves manually inputting each time
-os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
-os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
-os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
-
-# Spotipy stuff
-scope = "user-top-read, user-read-currently-playing"
-client_credentials_manager = SpotifyClientCredentials()
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
-
 # Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
 no = ["N", "n"]
 json_exist = False
 playlist_exist = False
 current_song_exists = False
+user_exist = False
+
+# Check for files
 path = Path("./output.json")
 path1 = Path("./playlist.json")
+path2 = Path("./user.txt")
 if path.is_file() == True:
     json_exist = True
 if path1.is_file() == True:
     playlist_exist = True
+if path2.is_file() == True:
+    user_exist = True
 
 
 class Song:
@@ -37,6 +33,21 @@ class Song:
         self.artist = artist
         self.valence = valence
         self.arousal = arousal
+
+# Should really save these vars in a file and have if exist then pull from file, saves manually inputting each time
+if user_exist:
+    print("Do this")
+else:
+    os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
+    os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
+    os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
+    with open("user.txt", "w") as user_data:
+        user_data.write(os.environ["SPOTIPY_CLIENT_ID"] + "\n" + os.environ["SPOTIPY_CLIENT_SECRET"] + "\n" + os.environ["SPOTIPY_REDIRECT_URI"])
+
+# Spotipy stuff
+scope = "user-top-read, user-read-currently-playing"
+client_credentials_manager = SpotifyClientCredentials()
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 
 
 # Atrocious if/else vomit that gives really vague descriptions of valence/arousal level. Absolutely useless.
