@@ -10,3 +10,4 @@ playlist.json
 /dist
 app.spec
 user.txt
+cryptkey.key

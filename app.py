@@ -7,25 +7,43 @@ import json
 from pathlib import Path
 import sys
 import linecache
+from cryptography.fernet import Fernet
 
 # Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
 no = ["N", "n"]
+# Surely this can be streamlined???
 json_exist = False
 playlist_exist = False
 current_song_exists = False
 user_exist = False
+secret_key = False
 
 # Check for files
 path = Path("./output.json")
 path1 = Path("./playlist.json")
 path2 = Path("./user.txt")
+path3 = Path("./cryptkey.key")
+# This too????
 if path.is_file() == True:
     json_exist = True
 if path1.is_file() == True:
     playlist_exist = True
 if path2.is_file() == True:
     user_exist = True
+if path3.is_file() == True:
+    secret_key = True
+
+if secret_key:
+    with open('cryptkey.key', 'rb') as cryptkey:
+        key = cryptkey.read()
+    fernet = Fernet(key)
+else:
+    key = Fernet.generate_key()
+    with open('cryptkey.key', 'wb') as cryptkey:
+        cryptkey.write(key)
+    fernet = Fernet(key)
+    secret_key = True
 
 
 class Song:
@@ -35,17 +53,36 @@ class Song:
         self.valence = valence
         self.arousal = arousal
 
-# Should really save these vars in a file and have if exist then pull from file, saves manually inputting each time
+
 if user_exist:
+    with open("user.txt", "rb") as encrypted_file:
+        encrypted = encrypted_file.read()
+    decrypted = fernet.decrypt(encrypted)
+    with open("user.txt", "wb") as decrypted_user_data:
+        decrypted_user_data.write(decrypted)
+    
     os.environ["SPOTIPY_CLIENT_ID"] = linecache.getline(r"./user.txt", 1)
     os.environ["SPOTIPY_CLIENT_SECRET"] = linecache.getline(r"./user.txt", 2)
     os.environ["SPOTIPY_REDIRECT_URI"] = linecache.getline(r"./user.txt", 3)
+
+    with open("user.txt", "rb") as file:
+        original = file.read()
+    encrypt_user = fernet.encrypt(original)
+    with open("user.txt", "wb") as encrypted_user_data:
+        encrypted_user_data.write(encrypt_user)
+
 else:
     os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
     os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
     os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
+        
     with open("user.txt", "w") as user_data:
         user_data.write(os.environ["SPOTIPY_CLIENT_ID"] + "\n" + os.environ["SPOTIPY_CLIENT_SECRET"] + "\n" + os.environ["SPOTIPY_REDIRECT_URI"])
+    with open("user.txt", "rb") as file:
+        original = file.read()
+    encrypt_user = fernet.encrypt(original)
+    with open("user.txt", "wb") as encrypted_user_data:
+        encrypted_user_data.write(encrypt_user)
 
 # Spotipy stuff
 scope = "user-top-read, user-read-currently-playing"
