@@ -5,7 +5,6 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 
 key_grabber = Path("./cryptkey.key")
-output_file = Path("./output.json")
 playlist_file = Path("./playlist.json")
 
 if key_grabber.is_file():
