@@ -8,7 +8,12 @@ from tkinter.filedialog import askopenfilename
 gui = Tk()
 
 key_grabber = Path("./cryptkey.key")
+output_file = None
 playlist_file = Path("./playlist.json")
+
+def select_output():
+    global output_file
+    output_file = Path(askopenfilename())
 
 if key_grabber.is_file():
     with open('cryptkey.key', 'rb') as cryptkey:
@@ -29,9 +34,10 @@ gui.columnconfigure(0, weight=1)
 gui.rowconfigure(0, weight=1)
 
 ttk.Label(outer_box, text="Select your playlist output file.").grid(column=1, row=1, sticky=W)
-output_path_select = ttk.Button(outer_box, text="Choose a file.", width=7)
+output_path_select = ttk.Button(outer_box, text="Choose a file.", command=select_output, width=7)
 output_path_select.grid(column=1, row=2, sticky=(W, E))
 input()
+print(output_file)
 # output_file = Path(askopenfilename())
 # print(output_file)
 # sys.exit()
