@@ -12,29 +12,15 @@ from cryptography.fernet import Fernet
 # Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
 no = ["N", "n"]
-# Surely this can be streamlined???
-json_exist = False
-playlist_exist = False
 current_song_exists = False
-user_exist = False
-secret_key = False
 
 # Check for files
 path = Path("./output.json")
 path1 = Path("./playlist.json")
 path2 = Path("./user.txt")
 path3 = Path("./cryptkey.key")
-# This too????
-if path.is_file() == True:
-    json_exist = True
-if path1.is_file() == True:
-    playlist_exist = True
-if path2.is_file() == True:
-    user_exist = True
-if path3.is_file() == True:
-    secret_key = True
 
-if secret_key:
+if path3.is_file():
     with open('cryptkey.key', 'rb') as cryptkey:
         key = cryptkey.read()
     fernet = Fernet(key)
@@ -43,7 +29,6 @@ else:
     with open('cryptkey.key', 'wb') as cryptkey:
         cryptkey.write(key)
     fernet = Fernet(key)
-    secret_key = True
 
 
 class Song:
@@ -54,7 +39,7 @@ class Song:
         self.arousal = arousal
 
 
-if user_exist:
+if path2.is_file():
     with open("user.txt", "rb") as encrypted_file:
         encrypted = encrypted_file.read()
     decrypted = fernet.decrypt(encrypted)
@@ -70,7 +55,6 @@ if user_exist:
     encrypt_user = fernet.encrypt(original)
     with open("user.txt", "wb") as encrypted_user_data:
         encrypted_user_data.write(encrypt_user)
-
 else:
     os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
     os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
@@ -142,13 +126,11 @@ def gather_data():
 
 #### Gather Playlists
 def retrieve_playlist():
-    global playlist_exist
-    global json_exist
     retrieve_list = ""
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
-        if current_song_exists == True and retrieve_list in no and json_exist == False:
+        if current_song_exists == True and retrieve_list in no and path.is_file() == False:
             with open("output.json", "w") as json_file:
                 json_file.write("[" + "\n" + current_song_dumped + "\n" + "]")
         if retrieve_list in yes:
@@ -173,7 +155,7 @@ def retrieve_playlist():
                 energy = []
                 
                 # Write entire playlist to json
-                if playlist_exist == True:
+                if path1.is_file():
                     for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
                         track_names.append(track_enumerator["items"][i]["track"]["name"])
                         track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
@@ -195,7 +177,6 @@ def retrieve_playlist():
                     final_dump = json.dumps(blank_obj.__dict__, indent=4, separators=(",", ": "))
                     with open("playlist.json", "a") as json_file:
                         json_file.write(final_dump + "\n" + "]")
-                    playlist_exist = True
 
                 combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
                 numbered_names = enumerate(combination)
@@ -215,7 +196,7 @@ def retrieve_playlist():
 
                     ###### WORK ON THIS
                     save_q = input("Save song valence/arousal? Y/N ")
-                    if save_q in yes and json_exist == True:
+                    if save_q in yes and path.is_file():
                         final_input = input("Is this your final data entry? Y/N ")
                         if final_input in yes:
                             artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
@@ -263,7 +244,6 @@ def retrieve_playlist():
                         print(dump_it)
                         with open("output.json", "w") as json_file:
                             json_file.write("[" + "\n" + dump_it + "," + "\n")
-                        json_exist = True
                         retrieve_playlist()
                     else:
                         retrieve_playlist()
