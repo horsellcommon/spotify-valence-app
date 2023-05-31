@@ -18,7 +18,7 @@ else:
     sys.exit()
 
 print("Please select an output file to encrypt.")
-gui.geometry("800x600")
+gui.geometry("600x300")
 gui.title("Spotify Valence and Arousal Tool - Encrypt/Decrypt Files")
 input()
 # output_file = Path(askopenfilename())
