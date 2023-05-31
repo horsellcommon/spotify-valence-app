@@ -62,17 +62,17 @@ else:
         cryptkey.write(key)
     fernet = Fernet(key)
 
-gui.geometry("600x300")
-gui.title("Spotify Valence and Arousal Tool - Encrypt/Decrypt Files")
+gui.geometry("350x120")
+gui.title("SVAT - Encrypt/Decrypt Files")
 
-outer_box = ttk.Frame(gui, padding="3 3 12 12")
+outer_box = ttk.Frame(gui, padding="10 10 12 12")
 outer_box.grid(column=0, row=0, sticky=(N, W, E, S))
 gui.columnconfigure(0, weight=1)
 gui.rowconfigure(0, weight=1)
 
 # Output file encrypt/decrypt
 ttk.Label(outer_box, text="Select your songs output file.").grid(column=1, row=1, sticky=W)
-output_path_select = ttk.Button(outer_box, text="Choose a file.", command=select_output, width=7)
+output_path_select = ttk.Button(outer_box, text="Choose song file.", command=select_output, width=7)
 output_path_select.grid(column=1, row=2, sticky=(W, E))
 encrypt_output_button = ttk.Button(outer_box, text="ENCRYPT", command=encrypt_output, width=7)
 encrypt_output_button.grid(column=1, row=3, sticky=(W, E))
@@ -81,7 +81,7 @@ decrypt_output_button.grid(column=1, row=4, sticky=(W, E))
 
 # Playlist file encrypt/decrypt
 ttk.Label(outer_box, text="Select your playlist output file.").grid(column=2, row=1, sticky=W)
-playlist_path_select = ttk.Button(outer_box, text="Choose a file.", command=select_playlist, width=7)
+playlist_path_select = ttk.Button(outer_box, text="Choose playlist file.", command=select_playlist, width=7)
 playlist_path_select.grid(column=2, row=2, sticky=(W, E))
 encrypt_playlist_button = ttk.Button(outer_box, text="ENCRYPT", command=encrypt_playlist, width=7)
 encrypt_playlist_button.grid(column=2, row=3, sticky=(W, E))
