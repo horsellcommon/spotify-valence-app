@@ -1,8 +1,11 @@
 import sys
 from cryptography.fernet import Fernet
 from pathlib import Path
-from tkinter import Tk
+from tkinter import *
+from tkinter import ttk
 from tkinter.filedialog import askopenfilename
+
+gui = Tk()
 
 key_grabber = Path("./cryptkey.key")
 playlist_file = Path("./playlist.json")
@@ -15,6 +18,9 @@ else:
     sys.exit()
 
 print("Please select an output file to encrypt.")
-Tk().withdraw()
-output_file = Path(askopenfilename())
-print(output_file)
+gui.geometry("800x600")
+gui.title("Spotify Valence and Arousal Tool - Encrypt/Decrypt Files")
+input()
+# output_file = Path(askopenfilename())
+# print(output_file)
+# sys.exit()
