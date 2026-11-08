@@ -10,7 +10,7 @@ import linecache
 from cryptography.fernet import Fernet
 import requests
 
-# Cool global variables and check to see if files already exist
+# Better way to do this but cba changing it
 yes = ["Y", "y"]
 no = ["N", "n"]
 current_song_exists = False
@@ -75,10 +75,8 @@ else:
 scope = "user-top-read user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
-# New API testing
 with path2.open("rb") as new_api:
     newapi = linecache.getline(r"./user.txt", 4).rstrip('\n') # fuck off linecache
-# New requests testing - LOOK AT THIS SHIT https://freqblog.com/#docs
 spnew = requests.get("https://api.freqblog.com/", headers={"X-Api-Key": newapi})
 print(spnew.status_code)
 
@@ -121,7 +119,6 @@ def retrieve_playlist():
                 playlist_uri = listed[selected_playlist]["uri"]
                 more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
 
-                # ENUMERATOR + GATHER VALENCE/ENERGY OF ENTIRE PLAYLIST
                 track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=40, offset=0, market=None, additional_types=('track', )) # Limited to 39 because selecting anything above 39 causes an error
                 track_names = []
                 track_uris = []                
@@ -168,7 +165,6 @@ def retrieve_playlist():
                     print("Key: " + str(get_features[0]["key"]))
                     print("--------------------")
 
-                    ###### WORK ON THIS
                     save_q = input("Save song valence/arousal? Y/N ")
                     if save_q in yes and path.is_file():
                         final_input = input("Is this your final data entry? Y/N ")
@@ -230,7 +226,7 @@ def retrieve_playlist():
         else:
             print("Command not recognised.")
 
-listening_now = "" # Quick fix for if Spotify isn't running, will try to substitute with something that checks whether the user is listening rather than having manual input
+listening_now = ""
 while listening_now not in yes or no:
         listening_now = input("Are you listening to Spotify right now? Y/N ")
         if listening_now in yes:
@@ -244,9 +240,6 @@ while listening_now not in yes or no:
             print("Song arousal: " + str(current_song_features[0]["energy"]))
             print(">>> SONG KEY may influence effect of valence on mood. <<<")
             print("Key: " + str(current_song_features[0]["key"]))
-            # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
-            # Find out whether major/minor is available, valence can not be relied on for key.
-            # If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
             append_at_end = input("Add song to output file? Y/N ")
             if append_at_end in yes:
                 current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features[0]["valence"], current_song_features[0]["energy"])
