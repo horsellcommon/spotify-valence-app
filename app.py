@@ -34,11 +34,12 @@ else:
 
 
 class Song:
-    def __init__(self, title, artist, valence, arousal):
+    def __init__(self, title, artist, valence, arousal, key):
         self.title = title
         self.artist = artist
         self.valence = valence
         self.arousal = arousal
+        self.key = key
 
 if path2.is_file():
     with open("user.txt", "rb") as encrypted_file:
@@ -96,6 +97,33 @@ def gather_data():
         else:
             print("Command not recognised.")
 
+def get_audio_features(track):
+    response = requests.get(
+        "https://api.freqblog.com/lookup",
+        headers={"X-Api-Key": newapi},
+        params={"spotify_id": track["id"]},
+        timeout=30
+    )
+
+    if response.status_code == 404:
+        # Give it another go son
+        response = requests.get(
+            "https://api.freqblog.com/lookup",
+            headers={"X-Api-Key": newapi},
+            params={"track": track["name"],
+                    "artist": track["artists"][0]["name"],
+                    "wait": 20},
+                    timeout=30
+        )
+    if response.status_code == 202:
+        print("BE PATIENT.")
+        return None
+    if response.status_code == 404:
+        print("Track unavailable.")
+        return None
+    response.raise_for_status()
+    return response.json()
+
 #### Gather Playlists
 def retrieve_playlist():
     retrieve_list = ""
@@ -125,31 +153,45 @@ def retrieve_playlist():
                 valences = []
                 energy = []
                 
-                # Write entire playlist to json
-                if path1.is_file():
-                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
-                        track_names.append(track_enumerator["items"][i]["track"]["name"])
-                        track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
-                        valences.append(track_uris[i][0]["valence"])
-                        energy.append(track_uris[i][0]["energy"])
-                else:
-                    with open("playlist.json", "w") as json_file:
-                        json_file.write("[" + "\n")
-                    for i in range(len(track_enumerator["items"])): # Loops through and appends to track_names
-                        track_names.append(track_enumerator["items"][i]["track"]["name"])
-                        track_uris.append(sp.audio_features(track_enumerator["items"][i]["track"]["uri"]))
-                        valences.append(track_uris[i][0]["valence"])
-                        energy.append(track_uris[i][0]["energy"])
-                        create_playlist_objects = Song(track_names[i], track_enumerator["items"][i]["track"]["album"]["artists"][0]["name"], valences[i], energy[i])
-                        dump_tracks = json.dumps(create_playlist_objects.__dict__, indent=4, separators=(",", ": "))
-                        with open("playlist.json", "a") as json_file:
-                            json_file.write(dump_tracks + "," + "\n")
-                    blank_obj = Song("", "", "", "") # Bad form but quick way to ensure json is formatted correctly on completion
-                    final_dump = json.dumps(blank_obj.__dict__, indent=4, separators=(",", ": "))
-                    with open("playlist.json", "a") as json_file:
-                        json_file.write(final_dump + "\n" + "]")
+                # FUCK IT. WE'RE DOING IT LIVE.
+                playlist_exists = path1.is_file()
+                playlist_objects = []
 
-                combination = [track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "." for i in range(len(track_names))] 
+                for item in track_enumerator["items"]:
+                    track = item.get("track")
+                    if not track or not track.get("id"):
+                        print("Skipping track due to missing ID.")
+                        continue
+                    features = get_audio_features(track)
+                    if features is None:
+                        print(f"Skipping track due to missing features.")
+                        continue
+                    if features.get("valence") is None or features.get("energy") is None:
+                        print(f"Missing audio features for {track['name']}")
+                        continue
+
+                    track_names.append(track["name"])
+                    track_uris.append(track["uri"])
+                    valences.append(features["valence"])
+                    energy.append(features["energy"])
+                    
+
+                    playlist_objects.append(
+                        Song(
+                            track["name"],
+                            track["artists"][0]["name"],
+                            features["valence"],
+                            features["energy"],
+                            features["key"]
+                        ).__dict__
+                    )
+                if not playlist_exists:
+                    with open("playlist.json", "w") as json_file:
+                        json.dump(playlist_objects, json_file, indent=4)
+                combination = [
+                    track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "."
+                    for i in range(len(track_names))
+                ]
                 numbered_names = enumerate(combination)
                 pprint.pprint(list(numbered_names))
 
@@ -159,18 +201,23 @@ def retrieve_playlist():
                 if track_selector < len(playlist_uri) + 1:
                     print("--------------------")
                     print("You have chosen '" + more_details["items"][track_selector]["track"]["name"] + "' by " + more_details["items"][track_selector]["track"]["artists"][0]["name"] + ".")
-                    get_features = sp.audio_features(more_details["items"][track_selector]["track"]["uri"])
-                    print("Song valence: " + str(get_features[0]["valence"]))
-                    print("Song arousal: " + str(get_features[0]["energy"]))
-                    print("Key: " + str(get_features[0]["key"]))
+                    selected_track = more_details["items"][track_selector]["track"]
+                    get_features = get_audio_features(selected_track)
+                    if get_features is None:
+                        print("Audio features unavailable.")
+                        retrieve_playlist()
+                        return
+                    print("Song valence: " + str(get_features["valence"]))
+                    print("Song arousal: " + str(get_features["energy"]))
+                    print("Key: " + str(get_features.get("key", "Unavailable")))
                     print("--------------------")
 
                     save_q = input("Save song valence/arousal? Y/N ")
                     if save_q in yes and path.is_file():
                         final_input = input("Is this your final data entry? Y/N ")
                         if final_input in yes:
-                            artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
                             if current_song_exists == True:
@@ -200,16 +247,16 @@ def retrieve_playlist():
                             open_file.close()
                             sys.exit()
                         else:
-                            artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
                             with open("output.json", "a") as json_file:
                                 json_file.write(dump_it + "," + "\n")
                             retrieve_playlist()
                     elif save_q in yes:
-                        artist_list = [more_details["items"][track_selector]["track"]["name"], more_details["items"][track_selector]["track"]["artists"][0]["name"], get_features[0]["valence"], get_features[0]["energy"]]
-                        make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                        artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
+                        make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
                         dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                         print(dump_it)
                         with open("output.json", "w") as json_file:
@@ -235,14 +282,26 @@ while listening_now not in yes or no:
             pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
 
             # Add valence of currently playing track.
-            current_song_features = sp.audio_features(playback["item"]["uri"])
-            print("Song valence: " + str(current_song_features[0]["valence"]))
-            print("Song arousal: " + str(current_song_features[0]["energy"]))
+            response = requests.get(
+                "https://api.freqblog.com/lookup",
+                headers={"X-Api-Key": newapi},
+                params={"track": playback["item"]["name"],
+                        "artist": playback["item"]["artists"][0]["name"],
+                        "wait": 20
+                }
+            )
+            print(response.status_code)
+            print(response.text)
+
+            response.raise_for_status()  # Raise an exception if the request was unsuccessful
+            current_song_features = response.json()
+            print("Song valence: " + str(current_song_features["valence"]))
+            print("Song arousal: " + str(current_song_features["energy"]))
             print(">>> SONG KEY may influence effect of valence on mood. <<<")
-            print("Key: " + str(current_song_features[0]["key"]))
+            print("Key: " + str(current_song_features.get("key", "Unavailable")))
             append_at_end = input("Add song to output file? Y/N ")
             if append_at_end in yes:
-                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features[0]["valence"], current_song_features[0]["energy"])
+                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features["valence"], current_song_features["energy"], current_song_features.get("key", "Unavailable"))
                 current_song_dumped = json.dumps(current_song_object.__dict__, indent=4, separators=(",", ": "))
                 print(current_song_dumped)
                 current_song_exists = True

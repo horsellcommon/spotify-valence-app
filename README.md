@@ -1,17 +1,29 @@
 # Spotify Valence and Arousal Tool
-# ***THIS IS ABSOLUTELY KNACKERED AT THE MOMENT - WORKING ON IT***
 
 A VERY rough console-based program that gathers playlist metadata from the current user or a selected user.
+Ever since Spotify stopped people from retrieving audio_features, I've had to update this app (Two years late, I know). It runs slower because it's calling a third party API and I've had to jimmy up the code to get it functional again.
+Do not fret, for now it functions again, but it limps along like a dog with a bad leg, never to reach its former speeds ever again.
 
-To use this, you must have your own client id, secret and redirect URI. You can get these by creating your own app on the Spotify developer dashboard, a link is available at the bottom of this readme (You can find tutorials on how to properly use Spotify's development section online if you're struggling).<br><br>Once you have these, keep them on hand for when you want to use the program so you can auth quickly.
+# Usage and Requirements
 
+You need what you needed last time, but with some extra steps! This app still uses Spotify's API for everything other than audio_features, so all of that still works!
+- Head to the Spotify dev dashboard and create a new app, that'll give you your 'CLIENT_ID', 'CLIENT_SECRET', and your 'REDIRECT_URIs'.
+- Set your 'REDIRECT URI' to 'http://127.0.0.1:PORT' (Any port will do so have fun with it)
+- Once you've got that done, keep that page open because now we've got to do a big fucking detour over to 'https://freqblog.com/' because they've got the audio features we need! The whole point of the app isn't even available on Spotify anymore!
+- Sign up for a free API key, you get like 1000 requests a month.
+- After you've got that, you should be good to go. Keep all of that bullshit on hand because you're going to copy/paste it into this frankenapp momentarily.
+- I'm not releasing an executable with this release just yet because I can't be bothered! So clone this repo and grab the dependencies then run 'app.py'. The standalone encryption thingimajig that comes with it ('encdec.py') didn't need an update so that still works as intended. There's a standalone repo for that which is a bit better than this bundled one somewhere on my profile if you're just looking for that.
 
-The purpose of this is to aid in research focused around listener valence and arousal data. Data from this may benefit those studying or researching Psychology or Musicology.
+# What's the point of this?
+
+Good question! I've been wondering that myself. The purpose of this is, or was, to aid in research focused around listener valence and arousal data. Data from this may benefit those studying or researching Psychology or Musicology.
 
 The program gathers the valence of a song/songs (How happy or sad a song is) and the energy of a song. The user is able to gather playlist data of any Spotify account, as long as the user knows that account's Spotify username.
-Once all data has been collected, a json file is created with all data collected for use.
+Once all data has been collected, a json file is created with all data collected for use (May or may not function as intended now compared to previously).
 
-Currently, there is an issue where, if you gather the data for one song and one song only, the json won't format properly, so you will have to manually open the json file and correct the mistake.
+~~Currently, there is an issue where, if you gather the data for one song and one song only, the json won't format properly, so you will have to manually open the json file and correct the mistake.~~
+
+**There are issues.**
 
 If you do end up using this code or program for whatever reason then please acknowledge where you got it from, you are more than welcome to use this in your own research.
 
@@ -19,6 +31,5 @@ If you do end up using this code or program for whatever reason then please ackn
 ## Useful Links
 
 * Download releases [here](https://github.com/horsellcommon/spotify-valence-app/releases)
-
-
 * Link to the [Spotify developer dashboard](https://developer.spotify.com/dashboard)
+* The third-party API you need! [FreqBlog's Music Metadata API](https://freqblog.com/)
