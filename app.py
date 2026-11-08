@@ -239,17 +239,26 @@ while listening_now not in yes or no:
             pprint.pprint("Currently listening to: '" + playback["item"]["name"] + "' by " + playback["item"]["artists"][0]["name"] + ".")
 
             # Add valence of currently playing track.
-            current_song_features = sp.audio_features(playback["item"]["uri"])
-            print("Song valence: " + str(current_song_features[0]["valence"]))
-            print("Song arousal: " + str(current_song_features[0]["energy"]))
+            response = requests.get(
+                "https://api.freqblog.com/lookup",
+                headers={"X-Api-Key": newapi},
+                params={"track": playback["item"]["name"],
+                        "artist": playback["item"]["artists"][0]["name"],
+                        "wait": 20
+                }
+            )
+            print(response.status_code)
+            print(response.text)
+
+            response.raise_for_status()  # Raise an exception if the request was unsuccessful
+            current_song_features = response.json()
+            print("Song valence: " + str(current_song_features["valence"]))
+            print("Song arousal: " + str(current_song_features["energy"]))
             print(">>> SONG KEY may influence effect of valence on mood. <<<")
-            print("Key: " + str(current_song_features[0]["key"]))
-            # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
-            # Find out whether major/minor is available, valence can not be relied on for key.
-            # If all else fails then make best guess based on valence levels? Over 0.75 most probably maj and under 0.25 most probably min
+            print("Key: " + str(current_song_features.get("key", "Unavailable")))
             append_at_end = input("Add song to output file? Y/N ")
             if append_at_end in yes:
-                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features[0]["valence"], current_song_features[0]["energy"])
+                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features["valence"], current_song_features["energy"])
                 current_song_dumped = json.dumps(current_song_object.__dict__, indent=4, separators=(",", ": "))
                 print(current_song_dumped)
                 current_song_exists = True
