@@ -220,8 +220,8 @@ def retrieve_playlist():
                     if save_q in yes and path.is_file():
                         final_input = input("Is this your final data entry? Y/N ")
                         if final_input in yes:
-                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"]]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
                             if current_song_exists == True:
@@ -251,8 +251,8 @@ def retrieve_playlist():
                             open_file.close()
                             sys.exit()
                         else:
-                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"]]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3])
+                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
+                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
                             dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
                             print(dump_it)
                             with open("output.json", "a") as json_file:
