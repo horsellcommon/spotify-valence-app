@@ -1,4 +1,5 @@
 # Spotify Valence and Arousal Tool
+# ***THIS IS ABSOLUTELY KNACKERED AT THE MOMENT - WORKING ON IT***
 
 A VERY rough console-based program that gathers playlist metadata from the current user or a selected user.
 
