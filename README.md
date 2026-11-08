@@ -1,5 +1,6 @@
 # Spotify Valence and Arousal Tool
 # ***THIS IS ABSOLUTELY KNACKERED AT THE MOMENT - WORKING ON IT***
+
 A VERY rough console-based program that gathers playlist metadata from the current user or a selected user.
 
 To use this, you must have your own client id, secret and redirect URI. You can get these by creating your own app on the Spotify developer dashboard, a link is available at the bottom of this readme (You can find tutorials on how to properly use Spotify's development section online if you're struggling).<br><br>Once you have these, keep them on hand for when you want to use the program so you can auth quickly.
