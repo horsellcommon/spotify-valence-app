@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import linecache
 from cryptography.fernet import Fernet
+import requests
 
 # Cool global variables and check to see if files already exist
 yes = ["Y", "y"]
@@ -19,6 +20,7 @@ path = Path("./output.json")
 path1 = Path("./playlist.json")
 path2 = Path("./user.txt")
 path3 = Path("./cryptkey.key")
+path4 = Path("./new_api_key.txt")
 
 if path3.is_file():
     with open('cryptkey.key', 'rb') as cryptkey:
@@ -69,44 +71,15 @@ else:
         encrypted_user_data.write(encrypt_user)
 
 # Spotipy stuff
-scope = "user-top-read, user-read-currently-playing"
+scope = "user-top-read user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
-
-
-# Atrocious if/else vomit that gives really vague descriptions of valence/arousal level. Absolutely useless.
-def current_valence_arousal():
-    ### POSITIVE
-    if current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.75:
-        print(f"This song has very high valence and very high arousal.")
-    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] > 0.5:
-        print(f"This song has very high valence and positive arousal.")
-    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
-        print("This song has both positive valence and arousal.")
-    ### AVERAGE OR DIFFERING
-    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.25:
-        print("This song has very high valence but very negative arousal.")
-    elif current_song_features[0]["valence"] > 0.75 and current_song_features[0]["energy"] < 0.5:
-        print("This song has very high valence but negative arousal.")
-    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] > 0.5:
-        print("This song has positive valence but negative arousal.")
-    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] > 0.75:
-        print("This song has very high arousal but very low valence.")
-    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.75:
-        print("This song has very high arousal but negative valence.")
-    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] > 0.5:
-        print("This song has positive arousal but negative valence.")
-    elif current_song_features[0]["valence"] > 0.5 and current_song_features[0]["energy"] < 0.5:
-        print("This song has negative arousal but positive valence.")
-    ### NEGATIVE
-    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] < 0.25:
-        print(f"This song has very negative valence and very negative arousal.")
-    elif current_song_features[0]["valence"] < 0.25 and current_song_features[0]["energy"] < 0.5:
-        print(f"This song has very negative valence and negative arousal.")
-    elif current_song_features[0]["valence"] < 0.5 and current_song_features[0]["energy"] < 0.5:
-        print(f"This song has negative valence and arousal.")
-    else:
-        print("No valence/energy data available for some reason.")
+# New API testing
+newapi = ""
+with path4.open("r") as new_api:
+    newapi = new_api.read()
+# New requests testing
+spnew = requests.get("https://api.freqblog.com/", headers={"X-Api-Key": newapi})
 
 #### Gather user info - display name & follower count
 def gather_data():
@@ -268,7 +241,6 @@ while listening_now not in yes or no:
             current_song_features = sp.audio_features(playback["item"]["uri"])
             print("Song valence: " + str(current_song_features[0]["valence"]))
             print("Song arousal: " + str(current_song_features[0]["energy"]))
-            current_valence_arousal()
             print(">>> SONG KEY may influence effect of valence on mood. <<<")
             print("Key: " + str(current_song_features[0]["key"]))
             # Figure out Spotify's ridiculous way of presenting key. Is 1 C??? Is 4 Eb or E?
