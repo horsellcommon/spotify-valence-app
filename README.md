@@ -1,7 +1,7 @@
 # Spotify Valence and Arousal Tool
 
 A VERY rough console-based program that gathers playlist metadata from the current user or a selected user.
-Ever since Spotify stopped people from retrieving audio_features, I've had to update this app (Two years late, I know). It runs slower because it's calling a third party AI and I've had to jimmy up the code to get it functional again.
+Ever since Spotify stopped people from retrieving audio_features, I've had to update this app (Two years late, I know). It runs slower because it's calling a third party API and I've had to jimmy up the code to get it functional again.
 Do not fret, for now it functions again, but it limps along like a dog with a bad leg, never to reach its former speeds ever again.
 
 # Usage and Requirements
