@@ -34,11 +34,12 @@ else:
 
 
 class Song:
-    def __init__(self, title, artist, valence, arousal):
+    def __init__(self, title, artist, valence, arousal, key):
         self.title = title
         self.artist = artist
         self.valence = valence
         self.arousal = arousal
+        self.key = key
 
 if path2.is_file():
     with open("user.txt", "rb") as encrypted_file:
@@ -258,7 +259,7 @@ while listening_now not in yes or no:
             print("Key: " + str(current_song_features.get("key", "Unavailable")))
             append_at_end = input("Add song to output file? Y/N ")
             if append_at_end in yes:
-                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features["valence"], current_song_features["energy"])
+                current_song_object = Song(playback["item"]["name"], playback["item"]["artists"][0]["name"], current_song_features["valence"], current_song_features["energy"], current_song_features.get("key", "Unavailable"))
                 current_song_dumped = json.dumps(current_song_object.__dict__, indent=4, separators=(",", ": "))
                 print(current_song_dumped)
                 current_song_exists = True
