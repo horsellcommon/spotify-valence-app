@@ -78,7 +78,7 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth
 newapi = ""
 with path4.open("r") as new_api:
     newapi = new_api.read()
-# New requests testing
+# New requests testing - LOOK AT THIS SHIT https://freqblog.com/#docs
 spnew = requests.get("https://api.freqblog.com/", headers={"X-Api-Key": newapi})
 
 #### Gather user info - display name & follower count
