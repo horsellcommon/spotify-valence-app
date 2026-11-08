@@ -20,7 +20,7 @@ path = Path("./output.json")
 path1 = Path("./playlist.json")
 path2 = Path("./user.txt")
 path3 = Path("./cryptkey.key")
-path4 = Path("./new_api_key.txt")
+        
 
 if path3.is_file():
     with open('cryptkey.key', 'rb') as cryptkey:
@@ -40,7 +40,6 @@ class Song:
         self.valence = valence
         self.arousal = arousal
 
-
 if path2.is_file():
     with open("user.txt", "rb") as encrypted_file:
         encrypted = encrypted_file.read()
@@ -51,6 +50,7 @@ if path2.is_file():
     os.environ["SPOTIPY_CLIENT_ID"] = linecache.getline(r"./user.txt", 1)
     os.environ["SPOTIPY_CLIENT_SECRET"] = linecache.getline(r"./user.txt", 2)
     os.environ["SPOTIPY_REDIRECT_URI"] = linecache.getline(r"./user.txt", 3)
+    os.environ["NEW_API_KEY"] = linecache.getline(r"./user.txt", 4)
 
     with open("user.txt", "rb") as file:
         original = file.read()
@@ -61,9 +61,10 @@ else:
     os.environ["SPOTIPY_CLIENT_ID"] = input("Enter your Spotify Client ID: ")
     os.environ["SPOTIPY_CLIENT_SECRET"] = input("Enter your Spotify Secret ID: ")
     os.environ["SPOTIPY_REDIRECT_URI"] = input("Enter your Spotify Redirect URI: ")
+    os.environ["NEW_API_KEY"] = input("Enter your new API key: ")
         
     with open("user.txt", "w") as user_data:
-        user_data.write(os.environ["SPOTIPY_CLIENT_ID"] + "\n" + os.environ["SPOTIPY_CLIENT_SECRET"] + "\n" + os.environ["SPOTIPY_REDIRECT_URI"])
+        user_data.write(os.environ["SPOTIPY_CLIENT_ID"] + "\n" + os.environ["SPOTIPY_CLIENT_SECRET"] + "\n" + os.environ["SPOTIPY_REDIRECT_URI"] + "\n" + os.environ["NEW_API_KEY"])
     with open("user.txt", "rb") as file:
         original = file.read()
     encrypt_user = fernet.encrypt(original)
@@ -75,11 +76,11 @@ scope = "user-top-read user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 # New API testing
-newapi = ""
-with path4.open("r") as new_api:
-    newapi = new_api.read()
+with path2.open("rb") as new_api:
+    newapi = linecache.getline(r"./user.txt", 4).rstrip('\n') # fuck off linecache
 # New requests testing - LOOK AT THIS SHIT https://freqblog.com/#docs
 spnew = requests.get("https://api.freqblog.com/", headers={"X-Api-Key": newapi})
+print(spnew.status_code)
 
 #### Gather user info - display name & follower count
 def gather_data():
