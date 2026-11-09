@@ -12,6 +12,14 @@ You need what you needed last time, but with some extra steps! This app still us
 - After you've got that, you should be good to go. Keep all of that bullshit on hand because you're going to copy/paste it into this frankenapp momentarily.
 - I'm not releasing an executable with this release just yet because I can't be bothered! So clone this repo and grab the dependencies then run 'app.py'. The standalone encryption thingimajig that comes with it ('encdec.py') didn't need an update so that still works as intended. There's a standalone repo for that which is a bit better than this bundled one somewhere on my profile if you're just looking for that.
 
+## GDPR - Do we need it? A brief rundown of 'encdec.py'
+
+Researchers *LOVE* GDPR. It's what they get up in the morning to think about and it's what gets them to bed at night. You may be thinking, how on Earth am I going to show that I'm towing the line of legality in regard to my participants' data? Well worry no more because that's what this little file helps with.
+
+Once you've gathered playlist data, you can go overkill by running this file which can encrypt and decrypt whatever you grab from your participants' Spotify. [This](https://github.com/horsellcommon/Text-File-Encryption) is the standalone package if you're into that sort of thing.
+
+When you run this, you'll be presented with the most beautiful GUI you've ever seen in your life, so just select the file and hit either encrypt or decrypt.
+
 # What's the point of this?
 
 Good question! I've been wondering that myself. The purpose of this is, or was, to aid in research focused around listener valence and arousal data. Data from this may benefit those studying or researching Psychology or Musicology.
