@@ -21,6 +21,10 @@ Once all data has been collected, a json file is created with all data collected
 
 If you do end up using this code or program for whatever reason then please acknowledge where you got it from, you are more than welcome to use this in your own research.
 
+# Troubleshooting
+
+Honestly, it should work out of the box and if it isn't then you're doing it wrong. It's not me, it's you.
+BUT, if you do come across any issues then send them through and I'll get to it.
 
 ## Useful Links
 
