@@ -8,7 +8,8 @@ playlist.json
 /images
 /build
 /dist
-app.spec
+EncDec.spec
+SVAT.spec
 user.txt
 cryptkey.key
 TODO.txt
