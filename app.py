@@ -14,6 +14,8 @@ import requests
 yes = ["Y", "y"]
 no = ["N", "n"]
 current_song_exists = False
+second_time_around = False
+saved_song_records = []
 
 # Check for files
 path = Path("./output.json")
@@ -40,6 +42,31 @@ class Song:
         self.valence = valence
         self.arousal = arousal
         self.key = key
+
+
+def save_json_file(base_path, data):
+    output_path = base_path
+    file_number = 2
+    while output_path.exists():
+        output_path = base_path.with_name(
+            f"{base_path.stem}_{file_number}{base_path.suffix}"
+        )
+        file_number += 1
+
+    with output_path.open("w", encoding="utf-8") as json_file:
+        json.dump(data, json_file, indent=4)
+    print(f"Saved data to {output_path}.")
+    return output_path
+
+
+def save_song_record(song):
+    global second_time_around
+
+    record = song.__dict__
+    save_json_file(path, [record])
+    saved_song_records.append(record)
+    second_time_around = True
+
 
 if path2.is_file():
     with open("user.txt", "rb") as encrypted_file:
@@ -168,13 +195,17 @@ def get_audio_features_batch(tracks):
 
 #### Gather Playlists
 def retrieve_playlist():
+    global second_time_around
+
     retrieve_list = ""
     while retrieve_list not in yes or no:
         retrieve_list = input("Gather playlist data? Y/N ")
         print("---------------------")
-        if current_song_exists == True and retrieve_list in no and path.is_file() == False:
-            with open("output.json", "w") as json_file:
-                json_file.write("[" + "\n" + current_song_dumped + "\n" + "]")
+        if current_song_exists and retrieve_list in no:
+            current_song_record = json.loads(current_song_dumped)
+            save_json_file(path, [current_song_record])
+            saved_song_records.append(current_song_record)
+            second_time_around = True
         if retrieve_list in yes:
             playlists = sp.user_playlists(username)
             listed = []
@@ -212,7 +243,6 @@ def retrieve_playlist():
                 analyzed_tracks = []
                 
                 # FUCK IT. WE'RE DOING IT LIVE.
-                playlist_exists = path1.is_file()
                 playlist_objects = []
 
                 for track, features in zip(tracks_to_lookup, batch_features):
@@ -234,9 +264,7 @@ def retrieve_playlist():
                             features["key"]
                         ).__dict__
                     )
-                if not playlist_exists:
-                    with open("playlist.json", "w") as json_file:
-                        json.dump(playlist_objects, json_file, indent=4)
+                save_json_file(path1, playlist_objects)
                 combination = [
                     track["name"] + ". V: " + str(features["valence"])
                     + ". A: " + str(features["energy"]) + "."
@@ -257,54 +285,33 @@ def retrieve_playlist():
                     print("--------------------")
 
                     save_q = input("Save song valence/arousal? Y/N ")
-                    if save_q in yes and path.is_file():
-                        final_input = input("Is this your final data entry? Y/N ")
-                        if final_input in yes:
-                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
-                            dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
-                            print(dump_it)
-                            if current_song_exists == True:
-                                with open("output.json", "a") as json_file:
-                                    json_file.write(dump_it + "," + "\n" + current_song_dumped + "\n" + "]")
-                            else:
-                                with open("output.json", "a") as json_file:
-                                    json_file.write(dump_it + "\n" + "]")
-                            # Final read and average of output file
-                            open_file = open("output.json")
-                            load_file = json.load(open_file)
-                            valence_list = []
-                            arousal_list = []
-                            for valences in load_file:
-                                valence_list.append(valences["valence"])
-                            for energy in load_file:
-                                arousal_list.append(energy["arousal"])
-                            def Average(total):
-                                return sum(total) / len(total)
-                            call_average_valence = Average(valence_list)
-                            call_average_energy = Average(arousal_list)
-                            print("---------------------")
-                            print("Averaging valence and energy/arousal of existing output file...")
-                            print("Average Valence: ", call_average_valence)
-                            print("Average energy/arousal: ", call_average_energy)
-                            print("---------------------")
-                            open_file.close()
-                            sys.exit()
-                        else:
-                            artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
-                            make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
-                            dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
-                            print(dump_it)
-                            with open("output.json", "a") as json_file:
-                                json_file.write(dump_it + "," + "\n")
-                            retrieve_playlist()
-                    elif save_q in yes:
-                        artist_list = [selected_track["name"], selected_track["artists"][0]["name"], get_features["valence"], get_features["energy"], get_features.get("key", "Unavailable")]
-                        make_it = Song(artist_list[0], artist_list[1], artist_list[2], artist_list[3], artist_list[4])
-                        dump_it = json.dumps(make_it.__dict__, indent=4, separators=(",", ": "))
-                        print(dump_it)
-                        with open("output.json", "w") as json_file:
-                            json_file.write("[" + "\n" + dump_it + "," + "\n")
+                    if save_q in yes:
+                        had_saved_song = second_time_around
+                        make_it = Song(
+                            selected_track["name"],
+                            selected_track["artists"][0]["name"],
+                            get_features["valence"],
+                            get_features["energy"],
+                            get_features.get("key", "Unavailable"),
+                        )
+                        print(json.dumps(make_it.__dict__, indent=4))
+                        save_song_record(make_it)
+
+                        if had_saved_song:
+                            final_input = input("Is this your final data entry? Y/N ")
+                            if final_input in yes:
+                                valence_list = [
+                                    record["valence"] for record in saved_song_records
+                                ]
+                                arousal_list = [
+                                    record["arousal"] for record in saved_song_records
+                                ]
+                                print("---------------------")
+                                print("Averaging saved song valence and energy/arousal...")
+                                print("Average Valence: ", sum(valence_list) / len(valence_list))
+                                print("Average energy/arousal: ", sum(arousal_list) / len(arousal_list))
+                                print("---------------------")
+                                sys.exit()
                         retrieve_playlist()
                     else:
                         retrieve_playlist()
