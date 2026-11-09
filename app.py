@@ -78,8 +78,6 @@ client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 with path2.open("rb") as new_api:
     newapi = linecache.getline(r"./user.txt", 4).rstrip('\n') # fuck off linecache
-spnew = requests.get("https://api.freqblog.com/", headers={"X-Api-Key": newapi})
-print(spnew.status_code)
 
 #### Gather user info - display name & follower count
 def gather_data():
@@ -96,6 +94,18 @@ def gather_data():
             break
         else:
             print("Command not recognised.")
+
+def raise_for_freqblog_unauthorized(response):
+    if response.status_code == 401:
+        error = response.json()
+        error_code = error.get("error_code", "unknown")
+        detail = error.get("detail", "The API key was rejected.")
+        raise requests.HTTPError(
+            f"Freqblog rejected the API key (401, {error_code}): {detail} "
+            "Check that the saved API key is current and active.",
+            response=response,
+        )
+
 
 def get_audio_features(track):
     response = requests.get(
@@ -115,6 +125,7 @@ def get_audio_features(track):
                     "wait": 20},
                     timeout=30
         )
+    raise_for_freqblog_unauthorized(response)
     if response.status_code == 202:
         print("BE PATIENT.")
         return None
@@ -123,6 +134,37 @@ def get_audio_features(track):
         return None
     response.raise_for_status()
     return response.json()
+
+def get_audio_features_batch(tracks):
+    features = []
+    for start in range(0, len(tracks), 50):
+        batch = tracks[start:start + 50]
+        response = requests.post(
+            "https://api.freqblog.com/bulk",
+            headers={"X-Api-Key": newapi},
+            json={
+                "tracks": [
+                    {
+                        "track": track["name"],
+                        "artist": track["artists"][0]["name"],
+                    }
+                    for track in batch
+                ]
+            },
+            timeout=30,
+        )
+        raise_for_freqblog_unauthorized(response)
+        response.raise_for_status()
+        results = response.json()["results"]
+        if len(results) != len(batch):
+            raise ValueError(
+                "Freqblog returned a different number of results than requested."
+            )
+        features.extend(
+            result.get("result") if result.get("found") else None
+            for result in results
+        )
+    return features
 
 #### Gather Playlists
 def retrieve_playlist():
@@ -143,38 +185,45 @@ def retrieve_playlist():
             print("---------------------")
             selected_playlist = int(input("Input a playlist number for more details: "))
             print("---------------------")
-            if selected_playlist < len(listed) +1:
+            if 0 <= selected_playlist < len(listed):
                 playlist_uri = listed[selected_playlist]["uri"]
-                more_details = sp.playlist_items(playlist_uri, fields=None, offset=0, market=None, additional_types=('track', 'episode'))
-
-                track_enumerator = sp.playlist_tracks(playlist_uri, fields=None, limit=40, offset=0, market=None, additional_types=('track', )) # Limited to 39 because selecting anything above 39 causes an error
-                track_names = []
-                track_uris = []                
-                valences = []
-                energy = []
+                more_details = sp.playlist_items(
+                    playlist_uri,
+                    fields=None,
+                    limit=100,
+                    offset=0,
+                    market=None,
+                    additional_types=('track', 'episode'),
+                )
+                playlist_tracks = []
+                while more_details:
+                    playlist_tracks.extend(more_details["items"])
+                    more_details = sp.next(more_details)
+                tracks_to_lookup = []
+                for item in playlist_tracks:
+                    track = item.get("track")
+                    if not track or not track.get("id"):
+                        print("Skipping track due to missing ID.")
+                    elif not track.get("artists"):
+                        print(f"Skipping track with missing artist: {track['name']}")
+                    else:
+                        tracks_to_lookup.append(track)
+                batch_features = get_audio_features_batch(tracks_to_lookup)
+                analyzed_tracks = []
                 
                 # FUCK IT. WE'RE DOING IT LIVE.
                 playlist_exists = path1.is_file()
                 playlist_objects = []
 
-                for item in track_enumerator["items"]:
-                    track = item.get("track")
-                    if not track or not track.get("id"):
-                        print("Skipping track due to missing ID.")
-                        continue
-                    features = get_audio_features(track)
+                for track, features in zip(tracks_to_lookup, batch_features):
                     if features is None:
-                        print(f"Skipping track due to missing features.")
+                        print(f"Skipping track due to missing features: {track['name']}")
                         continue
                     if features.get("valence") is None or features.get("energy") is None:
                         print(f"Missing audio features for {track['name']}")
                         continue
 
-                    track_names.append(track["name"])
-                    track_uris.append(track["uri"])
-                    valences.append(features["valence"])
-                    energy.append(features["energy"])
-                    
+                    analyzed_tracks.append((track, features))
 
                     playlist_objects.append(
                         Song(
@@ -189,24 +238,19 @@ def retrieve_playlist():
                     with open("playlist.json", "w") as json_file:
                         json.dump(playlist_objects, json_file, indent=4)
                 combination = [
-                    track_names[i] + ". V: " + str(valences[i]) + ". A: " + str(energy[i]) + "."
-                    for i in range(len(track_names))
+                    track["name"] + ". V: " + str(features["valence"])
+                    + ". A: " + str(features["energy"]) + "."
+                    for track, features in analyzed_tracks
                 ]
                 numbered_names = enumerate(combination)
                 pprint.pprint(list(numbered_names))
 
-                # SELECTOR, WORKS
                 print("---------------------")
                 track_selector = int(input("Select a track for more details: "))
-                if track_selector < len(playlist_uri) + 1:
+                if 0 <= track_selector < len(analyzed_tracks):
                     print("--------------------")
-                    print("You have chosen '" + more_details["items"][track_selector]["track"]["name"] + "' by " + more_details["items"][track_selector]["track"]["artists"][0]["name"] + ".")
-                    selected_track = more_details["items"][track_selector]["track"]
-                    get_features = get_audio_features(selected_track)
-                    if get_features is None:
-                        print("Audio features unavailable.")
-                        retrieve_playlist()
-                        return
+                    selected_track, get_features = analyzed_tracks[track_selector]
+                    print("You have chosen '" + selected_track["name"] + "' by " + selected_track["artists"][0]["name"] + ".")
                     print("Song valence: " + str(get_features["valence"]))
                     print("Song arousal: " + str(get_features["energy"]))
                     print("Key: " + str(get_features.get("key", "Unavailable")))
