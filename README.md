@@ -1,8 +1,6 @@
 # Spotify Valence and Arousal Tool
 
-A VERY rough console-based program that gathers playlist metadata from the current user or a selected user.
-Ever since Spotify stopped people from retrieving audio_features, I've had to update this app (Two years late, I know). It runs slower because it's calling a third party API and I've had to jimmy up the code to get it functional again.
-Do not fret, for now it functions again, but it limps along like a dog with a bad leg, never to reach its former speeds ever again.
+A console-based program that gathers playlist metadata from the current user or a selected user.
 
 # Usage and Requirements
 
@@ -20,10 +18,6 @@ Good question! I've been wondering that myself. The purpose of this is, or was, 
 
 The program gathers the valence of a song/songs (How happy or sad a song is) and the energy of a song. The user is able to gather playlist data of any Spotify account, as long as the user knows that account's Spotify username.
 Once all data has been collected, a json file is created with all data collected for use (May or may not function as intended now compared to previously).
-
-~~Currently, there is an issue where, if you gather the data for one song and one song only, the json won't format properly, so you will have to manually open the json file and correct the mistake.~~
-
-**There are issues.**
 
 If you do end up using this code or program for whatever reason then please acknowledge where you got it from, you are more than welcome to use this in your own research.
 
