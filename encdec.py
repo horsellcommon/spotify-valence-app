@@ -110,4 +110,4 @@ quit_button.grid(column=2, row=5, sticky=(W, E))
 
 ttk.Label(outer_box, text="github.com/horsellcommon").grid(column=2, row=6, sticky=W)
 
-input()
+gui.mainloop()

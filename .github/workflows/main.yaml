@@ -21,14 +21,17 @@ jobs:
             platform: windows
             binary: SVAT-windows
             artifact: SVAT-windows.exe
+            encdec: encdec-windows.exe
           - os: ubuntu-latest
             platform: linux
             binary: SVAT-linux
             artifact: SVAT-linux
+            encdec: encdec-linux
           - os: macos-latest
             platform: macos
             binary: SVAT-macos
             artifact: SVAT-macos
+            encdec: encdec-macos
 
     steps:
       - name: Check out source
@@ -44,14 +47,19 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
 
-      - name: Build executable
+      - name: Build SVAT executable
         run: python -m PyInstaller --noconfirm --clean --onefile --name "${{ matrix.binary }}" app.py
 
-      - name: Upload executable
+      - name: Build encryption utility
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name "${{ matrix.encdec }}" encdec.py
+
+      - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}
-          path: dist/${{ matrix.artifact }}
+          path: |
+            dist/${{ matrix.artifact }}
+            dist/${{ matrix.encdec }}
           if-no-files-found: error
 
   release:

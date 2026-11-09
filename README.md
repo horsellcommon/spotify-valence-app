@@ -10,7 +10,6 @@ You need what you needed last time, but with some extra steps! This app still us
 - Once you've got that done, keep that page open because now we've got to do a big fucking detour over to 'https://freqblog.com/' because they've got the audio features we need! The whole point of the app isn't even available on Spotify anymore!
 - Sign up for a free API key, you get like 1000 requests a month.
 - After you've got that, you should be good to go. Keep all of that bullshit on hand because you're going to copy/paste it into this frankenapp momentarily.
-- Download the executable for your operating system from [Releases](https://github.com/horsellcommon/spotify-valence-app/releases), or clone this repo, install the dependencies, and run `python app.py`. The release workflow builds Windows, Linux, and macOS executables when a version tag starting with `v` is pushed (for example, `v1.0.0`). The standalone encryption utility (`encdec.py`) is not included in these releases.
 
 ## GDPR - Do we need it? A brief rundown of 'encdec.py'
 
