@@ -29,10 +29,12 @@ Once all data has been collected, a json file is created with all data collected
 
 If you do end up using this code or program for whatever reason then please acknowledge where you got it from, you are more than welcome to use this in your own research.
 
-# Troubleshooting
+# Troubleshooting & Known Issues
 
 Honestly, it should work out of the box and if it isn't then you're doing it wrong. It's not me, it's you.
 BUT, if you do come across any issues then send them through and I'll get to it.
+
+- Some outputted JSON files may appear blank if the world-class API that this application is using fails to deliver. I may introduce another API in the future (I'm sorry) as a fallback if I can be bothered to get around to implementing it.
 
 ## Useful Links
 

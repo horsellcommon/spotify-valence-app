@@ -99,14 +99,14 @@ else:
     with open("user.txt", "wb") as encrypted_user_data:
         encrypted_user_data.write(encrypt_user)
 
-# Spotipy stuff
+# API stuff - Spotify, Freqblog
 scope = "user-top-read user-read-currently-playing"
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, auth_manager=SpotifyOAuth(scope=scope))
 with path2.open("rb") as new_api:
     newapi = linecache.getline(r"./user.txt", 4).rstrip('\n') # fuck off linecache
 
-#### Gather user info - display name & follower count
+#### Gather user info
 def gather_data():
     gather_q = ""
     while gather_q not in yes or no:
@@ -344,7 +344,7 @@ while listening_now not in yes or no:
             print(response.status_code)
             print(response.text)
 
-            response.raise_for_status()  # Raise an exception if the request was unsuccessful
+            response.raise_for_status()
             current_song_features = response.json()
             print("Song valence: " + str(current_song_features["valence"]))
             print("Song arousal: " + str(current_song_features["energy"]))
