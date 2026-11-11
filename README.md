@@ -5,7 +5,7 @@ A console-based program that gathers playlist metadata from the current user or 
 # Usage and Requirements
 
 You need what you needed last time, but with some extra steps! This app still uses Spotify's API for everything other than audio_features, so all of that still works!
-- Head to the Spotify dev dashboard and create a new app, that'll give you your `CLIENT_ID`, `CLIENT_SECRET`, and your `REDIRECT_URI`.
+- Head to the [Spotify dev dashboard](https://developer.spotify.com/dashboard) and create a new app, that'll give you your `CLIENT_ID`, `CLIENT_SECRET`, and your `REDIRECT_URI`.
 - Set your `REDIRECT URI` to `http://127.0.0.1:PORT` (Any port will do so have fun with it)
 - Once you've got that done, keep that page open because now we've got to do a big fucking detour over to [Freqblog](https://freqblog.com/) because they've got the audio features we need! The whole point of the app isn't even available on Spotify anymore!
 - Sign up for a free API key, you get like 1000 requests a month.
